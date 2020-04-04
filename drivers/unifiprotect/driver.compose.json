@@ -1,5 +1,5 @@
 {
-  "id": "nvr",
+  "id": "unifiprotect",
   "class": "other",
   "capabilities": [
     "nvr_cpu_load",
@@ -11,8 +11,8 @@
     "en": "UniFi Protect Controller"
   },
   "images": {
-    "large": "drivers/nvr/assets/images/large.png",
-    "small": "drivers/nvr/assets/images/small.png"
+    "large": "drivers/unifiprotect/assets/images/large.png",
+    "small": "drivers/unifiprotect/assets/images/small.png"
   },
   "pair": [
     {

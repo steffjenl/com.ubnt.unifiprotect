@@ -181,7 +181,7 @@
   },
   "drivers": [
     {
-      "id": "camera",
+      "id": "protectcamera",
       "class": "sensor",
       "capabilities": [
         "alarm_motion",
@@ -192,8 +192,8 @@
         "en": "Camera"
       },
       "images": {
-        "large": "drivers/camera/assets/images/large.png",
-        "small": "drivers/camera/assets/images/small.png"
+        "large": "drivers/protectcamera/assets/images/large.png",
+        "small": "drivers/protectcamera/assets/images/small.png"
       },
       "pair": [
         {
@@ -213,7 +213,7 @@
       ]
     },
     {
-      "id": "nvr",
+      "id": "unifiprotect",
       "class": "other",
       "capabilities": [
         "nvr_cpu_load",
@@ -225,8 +225,8 @@
         "en": "UniFi Protect Controller"
       },
       "images": {
-        "large": "drivers/nvr/assets/images/large.png",
-        "small": "drivers/nvr/assets/images/small.png"
+        "large": "drivers/unifiprotect/assets/images/large.png",
+        "small": "drivers/unifiprotect/assets/images/small.png"
       },
       "pair": [
         {

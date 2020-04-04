@@ -1,8 +1,8 @@
 {
-    "title": "UniFi Video",
+    "title": "UniFi Protect",
     "pair": {
         "validate": {
-            "title": "Validating NVR",
+            "title": "Validating UniFi Cloud Key",
             "instruction": "Please add the NVR to Homey first and try again."
         },
         "login": {
@@ -10,11 +10,11 @@
         }
     },
     "settings": {
-        "title": "UniFi Video Settings",
-        "instruction": "Log in with the credentials of the UniFi Video user.",
-        "nvr": "NVR details",
+        "title": "UniFi Protect Settings",
+        "instruction": "Log in with the credentials of the UniFi Protect user.",
+        "nvr": "UniFi Cloud Key details",
         "nvrip": "IP address",
-        "credentials": "UniFi Video user credentials",
+        "credentials": "UniFi Protect user credentials",
         "username": "Username",
         "password": "Password",
         "apply": "Apply",

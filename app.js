@@ -1,10 +1,10 @@
 'use strict';
 
 const Homey = require('homey');
-const UfvApi = require('./lib/ufvapi');
+const UfPapi = require('./lib/ufpapi');
 const UfvConstants = require('./lib/ufvconstants');
 
-class UniFiVideo extends Homey.App {
+class UniFiProtect extends Homey.App {
   async onInit() {
     // Register snapshot image token
     this.snapshotToken = new Homey.FlowToken('ufv_snapshot', {
@@ -14,7 +14,7 @@ class UniFiVideo extends Homey.App {
     Homey.ManagerFlow.registerToken(this.snapshotToken);
 
     // Single API instance for all devices
-    this.api = new UfvApi();
+    this.api = new UfPapi();
 
     // Subscribe to connection events
     this.api.on(UfvConstants.EVENT_CONNECTION_ERROR, this._onConnectionError.bind(this));
@@ -96,7 +96,7 @@ class UniFiVideo extends Homey.App {
     this.api.getMotionEvents()
       .then(motions => {
         motions.forEach(motion => {
-          Homey.ManagerDrivers.getDriver('camera').onParseTriggerData(motion.camera, motion.start, motion.end);
+          Homey.ManagerDrivers.getDriver('protectcamera').onParseTriggerData(motion.camera, motion.start, motion.end);
         });
       })
       .catch(error => this.log(error));
@@ -135,4 +135,4 @@ class UniFiVideo extends Homey.App {
   }
 }
 
-module.exports = UniFiVideo;
+module.exports = UniFiProtect;

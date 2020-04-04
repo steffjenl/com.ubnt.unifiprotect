@@ -1,20 +1,20 @@
 {
-    "title": "UniFi Video",
+    "title": "UniFi Protect",
     "pair": {
         "validate": {
-            "title": "NVR valideren",
-            "instruction": "Voeg eerst de NVR aan Homey toe en probeer het daarna opnieuw."
+            "title": "UniFi Cloud Key valideren",
+            "instruction": "Voeg eerst de UniFi Cloud Key aan Homey toe en probeer het daarna opnieuw."
         },
         "login": {
             "title": "Inloggen"
         }
     },
     "settings": {
-        "title": "UniFi Video instellingen",
-        "instruction": "Log in met de gegevens van de UniFi Video-gebruiker.",
-        "nvr": "Gegevens van NVR",
+        "title": "UniFi Protect instellingen",
+        "instruction": "Log in met de gegevens van de UniFi Protect-gebruiker.",
+        "nvr": "Gegevens van UniFi Cloud Key",
         "nvrip": "IP-adres",
-        "credentials": "UniFi Video gebruikersgegevens",
+        "credentials": "UniFi Protect gebruikersgegevens",
         "username": "Gebruikersnaam",
         "password": "Wachtwoord",
         "apply": "Toepassen",

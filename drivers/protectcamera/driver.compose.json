@@ -1,5 +1,5 @@
 {
-  "id": "camera",
+  "id": "protectcamera",
   "class": "sensor",
   "capabilities": [
     "alarm_motion",
@@ -10,8 +10,8 @@
     "en": "Camera"
   },
   "images": {
-    "large": "drivers/camera/assets/images/large.png",
-    "small": "drivers/camera/assets/images/small.png"
+    "large": "drivers/protectcamera/assets/images/large.png",
+    "small": "drivers/protectcamera/assets/images/small.png"
   },
   "pair": [
     {
