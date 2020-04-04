@@ -1,18 +1,18 @@
 {
-  "id": "com.ubnt.unifivideo",
+  "id": "com.ubnt.unifiprotect",
   "sdk": 2,
   "name": {
-    "en": "UniFi Video"
+    "en": "UniFi Protect"
   },
   "description": {
-    "en": "Control Ubiquiti UniFi Video devices with Homey.",
-    "nl": "Bedien Ubiquiti UniFi Video apparaten met Homey."
+    "en": "Control Ubiquiti UniFi Protect devices with Homey.",
+    "nl": "Bedien Ubiquiti UniFi Protect apparaten met Homey."
   },
   "tags": {
     "en": [
       "ubiquiti",
       "unifi",
-      "video",
+      "protect",
       "security",
       "camera",
       "snapshot",
@@ -21,7 +21,7 @@
     "nl": [
       "ubiquiti",
       "unifi",
-      "video",
+      "protect",
       "beveiligingscamera",
       "camera",
       "momentopname",
@@ -37,7 +37,7 @@
     "security",
     "video"
   ],
-  "version": "1.1.2",
+  "version": "1.1.3",
   "compatibility": ">=1.5.0",
   "author": {
     "name": "Jeroen Brosens",
@@ -94,6 +94,18 @@
             "example": {
               "en": "Front door",
               "nl": "Voordeur"
+            }
+          },
+          {
+            "name": "ufv_snapshot_snapshoturl",
+            "type": "string",
+            "title": {
+              "en": "Snapshot url",
+              "nl": "Snapshot adres"
+            },
+            "example": {
+              "en": "https://camera/api/....",
+              "nl": "https://camera/api/...."
             }
           }
         ]
@@ -173,7 +185,8 @@
       "class": "sensor",
       "capabilities": [
         "alarm_motion",
-        "camera_recording_status"
+        "camera_recording_status",
+        "last_motion_at"
       ],
       "name": {
         "en": "Camera"
@@ -209,7 +222,7 @@
         "nvr_health_phrase"
       ],
       "name": {
-        "en": "Network Video Recorder"
+        "en": "UniFi Protect Controller"
       },
       "images": {
         "large": "drivers/nvr/assets/images/large.png",
@@ -244,6 +257,15 @@
       "setable": false,
       "uiComponent": "sensor",
       "icon": "/assets/recording.svg"
+    },
+    "last_motion_at": {
+      "type": "number",
+      "title": {
+        "en": "Last motion at",
+        "nl": "Laatste beweging op"
+      },
+      "getable": true,
+      "setable": false
     },
     "nvr_cpu_load": {
       "type": "number",

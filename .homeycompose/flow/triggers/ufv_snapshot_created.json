@@ -24,6 +24,18 @@
         "en": "Front door",
         "nl": "Voordeur"
       }
+    },
+    {
+      "name": "ufv_snapshot_snapshoturl",
+      "type": "string",
+      "title": {
+        "en": "Snapshot url",
+        "nl": "Snapshot adres"
+      },
+      "example": {
+        "en": "https://camera/api/....",
+        "nl": "https://camera/api/...."
+      }
     }
   ]
 }

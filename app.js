@@ -34,12 +34,13 @@ class UniFiVideo extends Homey.App {
     });
     this._login();
 
+
     // Enable remote debugging, if applicable
     if (Homey.env.DEBUG) {
       // eslint-disable-next-line global-require
       require('inspector').open(9229, '0.0.0.0');
     }
-    this.log('UniFi Video is running.');
+    this.log('UniFi Protect is running.');
   }
 
   _login() {
@@ -62,10 +63,49 @@ class UniFiVideo extends Homey.App {
     // Log in to NVR
     this.api.login(nvrip, credentials.username, credentials.password)
       .then(() => {
+        this.api.getBootstrapInfo()
+          .then(() => {
+            this.log('Bootstrap loaded.');
+            this._refreshTokens();
+            this._checkMotion();
+            this._motionLoop()
+          })
+          .catch(error => this.log(error));
         this.log('Logged in.');
-        this.api.subscribe();
       })
       .catch(error => this.log(error));
+
+
+  }
+
+  _refreshBootstrap() {
+    this.api.getBootstrapInfo()
+      .then(() => {
+        this.log('Bootstrap loaded.');
+      })
+      .catch(error => this.log(error));
+  }
+
+  _refreshTokens() {
+    // setInterval(() => this._login(), 604800000);
+    //setInterval(() => this._refreshBootstrap(), 3600000);
+  }
+
+  _checkMotion() {
+    //Get Last Motion
+    this.api.getMotionEvents()
+      .then(motions => {
+        motions.forEach(motion => {
+          Homey.ManagerDrivers.getDriver('camera').onParseTriggerData(motion.camera, motion.start, motion.end);
+        });
+      })
+      .catch(error => this.log(error));
+  }
+
+  _motionLoop() {
+    setInterval(() => {
+      this._checkMotion();
+    }, 5000);
   }
 
   _onConnectionError(error) {

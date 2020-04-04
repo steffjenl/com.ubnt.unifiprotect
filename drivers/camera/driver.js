@@ -21,7 +21,7 @@ class CameraDriver extends Homey.Driver {
     socket.on('list_devices', async (data, callback) => {
       callback(null, Object.values(await this.api.getCameras()).map(camera => {
         return {
-          data: { id: String(camera._id) },
+          data: { id: String(camera.id) },
           name: camera.name,
         };
       }));
@@ -34,8 +34,8 @@ class CameraDriver extends Homey.Driver {
       const result = await this.api.getCameras();
 
       Object.values(result).forEach(camera => {
-        this.log(`Adding camera [${camera._id}]`);
-        this.cameras[camera._id] = camera;
+        this.log(`Adding camera [${camera.id}]`);
+        this.cameras[camera.id] = camera;
       });
       this.log('Finished obtaining cameras from API.');
     }
@@ -56,13 +56,26 @@ class CameraDriver extends Homey.Driver {
   }
 
   onCamera(camera) {
-    const device = this.getDevice({ id: String(camera._id) });
+    const device = this.getDevice({ id: String(camera.id) });
     if (device instanceof Error) return;
 
     const status = {
-      recordingIndicator: camera.recordingIndicator,
+      recordingIndicator: camera.isRecording,
     };
     device.onCamera(status);
+  }
+
+  onParseTriggerData(camera, motionStart, motionEnd) {
+    const device = this.getDevice({
+      id: camera
+    });
+
+    if (Object.prototype.hasOwnProperty.call(device, '_events')) {
+      device.onMotionDetected(motionStart, motionEnd);
+    }
+    else{
+      console.log("Unknown device: " + camera);
+    }
   }
 }
 

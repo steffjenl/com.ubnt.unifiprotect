@@ -8,7 +8,7 @@
     "nvr_health_phrase"
   ],
   "name": {
-    "en": "Network Video Recorder"
+    "en": "UniFi Protect Controller"
   },
   "images": {
     "large": "drivers/nvr/assets/images/large.png",

@@ -20,12 +20,12 @@ class NvrDriver extends Homey.Driver {
       const nvrip = Homey.ManagerSettings.get('ufv:nvrip');
       this.log(nvrip);
       await this.api.login(nvrip, credentials.username, credentials.password);
-
+      await this.api.getBootstrapInfo();
       this.server = await this.api.getServer();
 
       this.device = {
         name: this.server.name,
-        data: { id: String(this.server._id) },
+        data: { id: String(this.server.id) },
       };
       socket.showView('list_devices');
     };
