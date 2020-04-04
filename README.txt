@@ -1,5 +1,5 @@
 Features:
-Use your UniFi Video cameras as motion alert sensors.
+Use your UniFi Protect cameras as motion alert sensors.
 Monitor your NVR's health in a dedicated, new NVR device.
 
 Supported device models:

@@ -1,10 +1,10 @@
 # UniFi Video
 
-Adds support for Ubiquiti UniFi Video devices in Homey.
+Adds support for Ubiquiti UniFi Protect devices in Homey.
 
 ## Supported devices
 
-* UniFi® NVR (Network Video Recorder):
+* UniFi® Protect (Network Video Recorder):
 	* UVC‑NVR
 * UniFi® Video Camera G3 series:
 	* UVC-G3
