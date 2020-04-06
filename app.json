@@ -40,8 +40,8 @@
   "version": "1.0.0",
   "compatibility": ">=1.5.0",
   "author": {
-    "name": "Jeroen Brosens",
-    "email": "j.brosens+unifivideo@gmail.com"
+    "name": "Stèphan Eizinga",
+    "email": "stephan@monkeysoft.nl"
   },
   "contributors": {
     "developers": [
@@ -55,18 +55,11 @@
       }
     ]
   },
-  "contributing": {
-    "donate": {
-      "paypal": {
-        "username": "jeroenbrosens"
-      }
-    }
-  },
   "bugs": {
     "url": "https://github.com/steffjenl/com.ubnt.unifiprotect/issues"
   },
   "source": "https://github.com/steffjenl/com.ubnt.unifiprotect",
-  "support": "mailto:j.brosens+unifivideo@gmail.com",
+  "support": "mailto:stephan@monkeysoft.nl",
   "flow": {
     "triggers": [
       {
@@ -129,7 +122,7 @@
             "type": "dropdown",
             "values": [
               {
-                "id": "none",
+                "id": "never",
                 "label": {
                   "en": "Don't record",
                   "nl": "Niet opnemen"
@@ -216,10 +209,9 @@
       "id": "unifiprotect",
       "class": "other",
       "capabilities": [
-        "nvr_cpu_load",
         "nvr_disk_used",
-        "nvr_health_status",
-        "nvr_health_phrase"
+        "nvr_disk_size",
+        "nvr_disk_size_used"
       ],
       "name": {
         "en": "UniFi Protect Controller"
@@ -280,6 +272,34 @@
       "setable": false,
       "uiComponent": "sensor",
       "icon": "/assets/cpu.svg"
+    },
+    "nvr_disk_size": {
+      "type": "number",
+      "units": {
+        "en": "GB"
+      },
+      "title": {
+        "en": "Disk size in GB",
+        "nl": "Schijf grote in GB"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/usage.svg"
+    },
+    "nvr_disk_size_used": {
+      "type": "number",
+      "units": {
+        "en": "GB"
+      },
+      "title": {
+        "en": "Disk used in GB",
+        "nl": "Schijfgebruik in GB"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/usage.svg"
     },
     "nvr_disk_used": {
       "type": "number",

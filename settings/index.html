@@ -59,7 +59,7 @@
                     if (nvrip) {
                         txtNvrIp.value = nvrip;
                     } else {
-                        console.warn('[SETTINGS] Could not read NVR IP address.');
+                        console.warn('[SETTINGS] Could not read UniFi Cloud Key IP address.');
                     }
                 });
 
@@ -78,7 +78,7 @@
             const saveSettings = () => {
                 Homey.set('ufv:nvrip', txtNvrIp.value, (error, result) => {
                     if (error) return Homey.alert(error);
-                    console.log('[SETTINGS] NVR IP address saved.');
+                    console.log('[SETTINGS] UniFi Cloud Key IP address saved.');
                 });
 
                 const credentials = {

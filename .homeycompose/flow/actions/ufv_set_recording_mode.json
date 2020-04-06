@@ -15,7 +15,7 @@
       "type": "dropdown",
       "values": [
         {
-          "id": "none",
+          "id": "never",
           "label": {
             "en": "Don't record",
             "nl": "Niet opnemen"

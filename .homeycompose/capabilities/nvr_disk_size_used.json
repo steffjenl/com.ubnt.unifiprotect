@@ -1,0 +1,14 @@
+{
+  "type": "number",
+  "units": {
+    "en": "GB"
+  },
+  "title": {
+    "en": "Disk used in GB",
+    "nl": "Schijfgebruik in GB"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "icon": "/assets/usage.svg"
+}

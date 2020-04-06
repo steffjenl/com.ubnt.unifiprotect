@@ -31,10 +31,7 @@ class Camera extends Homey.Device {
     new Homey.FlowCardAction(UfvConstants.ACTION_SET_RECORDING_MODE)
       .register()
       .registerRunListener((args, state) => { // eslint-disable-line no-unused-vars
-        const isFullTimeEnabled = args.recording_mode === 'always';
-        const isMotionEnabled = args.recording_mode === 'motion';
-
-        Api.setRecordingMode(args.device.getData(), isFullTimeEnabled, isMotionEnabled)
+        Api.setRecordingMode(args.device.getData(), args.recording_mode)
           .then(this.log.bind(this, '[recordingmode.set]'))
           .catch(this.error.bind(this, '[recordingmode.set]'));
 

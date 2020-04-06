@@ -74,7 +74,7 @@ class CameraDriver extends Homey.Driver {
       device.onMotionDetected(motionStart, motionEnd);
     }
     else{
-      console.log("Unknown device: " + camera);
+      this.log("Unknown device: " + camera);
     }
   }
 }

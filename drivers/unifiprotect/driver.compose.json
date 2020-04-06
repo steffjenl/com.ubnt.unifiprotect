@@ -2,10 +2,9 @@
   "id": "unifiprotect",
   "class": "other",
   "capabilities": [
-    "nvr_cpu_load",
     "nvr_disk_used",
-    "nvr_health_status",
-    "nvr_health_phrase"
+    "nvr_disk_size",
+    "nvr_disk_size_used"
   ],
   "name": {
     "en": "UniFi Protect Controller"

@@ -1,10 +1,9 @@
 Features:
 Use your UniFi Protect cameras as motion alert sensors.
-Monitor your NVR's health in a dedicated, new NVR device.
+Monitor your UniFi Cloud Key's health in a dedicated, new UniFi Cloud Key device.
 
 Supported device models:
-- UniFi® NVR (Network Video Recorder):
-	- UVC‑NVR
+- UniFi® Cloud Key v2 Pro
 - UniFi® Video Camera G3 series:
 	- UVC-G3
 	- UVC-G3-AF

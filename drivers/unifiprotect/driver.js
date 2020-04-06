@@ -73,18 +73,6 @@ class NvrDriver extends Homey.Driver {
     this.api.discover();
   }
 
-  async onHealth(health) {
-    this.log('onHealth');
-
-    if (!this.server) {
-      this.server = await this.api.getServer();
-    }
-    const device = this.getDevice({ id: String(this.server._id) });
-    if (device instanceof Error) return;
-
-    device.onHealth(health);
-  }
-
   async onServer(server) {
     this.log('onServer');
 
