@@ -65,7 +65,7 @@ class CameraDriver extends Homey.Driver {
     device.onCamera(status);
   }
 
-  onParseTriggerData(camera, motionStart, motionEnd) {
+  onParseTriggerMotionData(camera, motionStart, motionEnd) {
     const device = this.getDevice({
       id: camera
     });

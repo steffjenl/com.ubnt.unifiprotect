@@ -73,7 +73,7 @@ class UniFiProtect extends Homey.App {
     this.api.getMotionEvents()
       .then(motions => {
         motions.forEach(motion => {
-          Homey.ManagerDrivers.getDriver('protectcamera').onParseTriggerData(motion.camera, motion.start, motion.end);
+          Homey.ManagerDrivers.getDriver('protectcamera').onParseTriggerMotionData(motion.camera, motion.start, motion.end);
         });
       })
       .catch(error => this.log(error));
