@@ -2,7 +2,7 @@
 
 const Homey = require('homey');
 
-class Nvr extends Homey.Device {
+class UnifiProtect extends Homey.Device {
   onServer(server) {
     let totalSpaceUsed = ( ( (Number(server.storageInfo.totalSpaceUsed) / 1000 ) / 1000 ) / 1000 )
     let totalSize = ( ( (Number(server.storageInfo.totalSize) / 1000 ) / 1000 ) / 1000 )
@@ -12,4 +12,4 @@ class Nvr extends Homey.Device {
   }
 }
 
-module.exports = Nvr;
+module.exports = UnifiProtect;

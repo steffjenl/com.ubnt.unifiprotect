@@ -54,18 +54,16 @@ class UniFiProtect extends Homey.App {
     // Log in to NVR
     this.api.login(nvrip, credentials.username, credentials.password)
       .then(() => {
-        this.api.getBootstrapInfo()
-          .then(() => {
-            this.log('Bootstrap loaded.');
-            this._checkMotion();
-            this._motionLoop()
-          })
-          .catch(error => this.log(error));
-        this.log('Logged in.');
+         this.api.getBootstrapInfo()
+           .then(() => {
+             this.log('Bootstrap loaded.');
+             this._checkMotion();
+             this._motionLoop()
+           })
+           .catch(error => this.error(error));
+         this.log('Logged in.');
       })
-      .catch(error => this.log(error));
-
-
+      .catch(error => this.error(error));
   }
 
   _checkMotion() {
@@ -96,7 +94,7 @@ class UniFiProtect extends Homey.App {
   }
 
   _onNvrServer(server) {
-    Homey.ManagerDrivers.getDriver('nvr').onServer(server);
+    Homey.ManagerDrivers.getDriver('unifiprotect').onServer(server);
   }
 }
 

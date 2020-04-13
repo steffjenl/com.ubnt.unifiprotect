@@ -37,7 +37,7 @@
     "security",
     "video"
   ],
-  "version": "1.0.1",
+  "version": "1.0.2",
   "compatibility": ">=1.5.0",
   "author": {
     "name": "Stèphan Eizinga",
@@ -46,12 +46,12 @@
   "contributors": {
     "developers": [
       {
-        "name": "Jeroen Brosens",
-        "email": "j.brosens+unifivideo@gmail.com"
-      },
-      {
         "name": "Stèphan Eizinga",
         "email": "stephan@monkeysoft.nl"
+      },
+      {
+        "name": "Jeroen Brosens",
+        "email": "j.brosens+unifiprotect@gmail.com"
       }
     ]
   },
@@ -90,7 +90,7 @@
             }
           },
           {
-            "name": "ufv_snapshot_snapshoturl",
+            "name": "ufv_snapshot_snapshot_url",
             "type": "string",
             "title": {
               "en": "Snapshot url",
@@ -99,6 +99,18 @@
             "example": {
               "en": "https://camera/api/....",
               "nl": "https://camera/api/...."
+            }
+          },
+          {
+            "name": "ufv_snapshot_stream_url",
+            "type": "string",
+            "title": {
+              "en": "Snapshot video url",
+              "nl": "Snapshot video adres"
+            },
+            "example": {
+              "en": "rtsp://........:7447/........",
+              "nl": "rtsp://........:7447/........"
             }
           }
         ]

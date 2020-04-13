@@ -26,7 +26,7 @@
       }
     },
     {
-      "name": "ufv_snapshot_snapshoturl",
+      "name": "ufv_snapshot_snapshot_url",
       "type": "string",
       "title": {
         "en": "Snapshot url",
@@ -35,6 +35,18 @@
       "example": {
         "en": "https://camera/api/....",
         "nl": "https://camera/api/...."
+      }
+    },
+    {
+      "name": "ufv_snapshot_stream_url",
+      "type": "string",
+      "title": {
+        "en": "Snapshot video url",
+        "nl": "Snapshot video adres"
+      },
+      "example": {
+        "en": "rtsp://........:7447/........",
+        "nl": "rtsp://........:7447/........"
       }
     }
   ]

@@ -44,6 +44,7 @@ class Camera extends Homey.Device {
   _onSnapshotBuffer(camera, buffer) {
     const img = new Homey.Image('jpg');
     const snapshotUrl = Api.getSnapShotUrl(camera);
+    const streamUrl = Api.getStreamUrl(camera);
 
     img.setBuffer(buffer);
     img.register()
@@ -53,7 +54,8 @@ class Camera extends Homey.Device {
         this._snapshotTrigger.trigger({
           ufv_snapshot_token: img,
           ufv_snapshot_camera: this.getName(),
-          ufv_snapshot_snapshoturl: snapshotUrl
+          ufv_snapshot_snapshot_url: snapshotUrl,
+          ufv_snapshot_stream_url: streamUrl
         });
       })
       .catch(this.error.bind(this, '[snapshot.register]'));
