@@ -20,8 +20,7 @@ class Camera extends Homey.Device {
     new Homey.FlowCardAction(UfvConstants.ACTION_TAKE_SNAPSHOT)
       .register()
       .registerRunListener((args, state) => { // eslint-disable-line no-unused-vars
-        Api.snapshot(args.device.getData().id, args.width)
-          .then(buffer => this._onSnapshotBuffer(this.camera, buffer))
+        this._onSnapshotBuffer(this.camera)
           .catch(this.error.bind(this, 'Could not take snapshot.'));
 
         return Promise.resolve(true);
@@ -41,24 +40,62 @@ class Camera extends Homey.Device {
     await this._createSnapshotImage();
   }
 
-  _onSnapshotBuffer(camera, buffer) {
-    const img = new Homey.Image('jpg');
-    const snapshotUrl = Api.getSnapShotUrl(camera);
-    const streamUrl = Api.getStreamUrl(camera);
+  _onSnapshotBuffer(camera) {
+    return new Promise((resolve, reject) => {
+      let snapshotUrl = null;
+      let streamUrl = null;
+      Api.getSnapShotUrl(camera)
+        .then(address => {
+          snapshotUrl = address
+          Api.getStreamUrl(camera)
+            .then(address => {
+              streamUrl = address
+              const SnapshotImage = new Homey.Image();
+              SnapshotImage.setStream(async stream => {
+                // Obtain snapshot URL
+                let snapshotUrl = null;
 
-    img.setBuffer(buffer);
-    img.register()
-      .then(() => {
-        Homey.app.snapshotToken.setValue(img);
+                await Api.createSnapshotUrl(this.camera)
+                  .then(url => { snapshotUrl = url; })
+                  .catch(error => reject(error));
 
-        this._snapshotTrigger.trigger({
-          ufv_snapshot_token: img,
-          ufv_snapshot_camera: this.getName(),
-          ufv_snapshot_snapshot_url: snapshotUrl,
-          ufv_snapshot_stream_url: streamUrl
-        });
-      })
-      .catch(this.error.bind(this, '[snapshot.register]'));
+                if (!snapshotUrl) {
+                  throw new Error('Invalid snapshot url.');
+                }
+
+                const agent = new https.Agent({
+                  rejectUnauthorized: false
+                })
+
+                // Fetch image
+                const res = await fetch(snapshotUrl, { agent });
+                if (!res.ok) throw new Error('Could not fetch snapshot image.');
+
+                return res.body.pipe(stream);
+              });
+              SnapshotImage.register()
+                .then(() => {
+                  Homey.app.snapshotToken.setValue(SnapshotImage);
+
+                  this.log('------ _onSnapshotBuffer ------');
+                  this.log('- Camera name: ' + this.getName());
+                  this.log('- Snapshot url: ' + snapshotUrl);
+                  this.log('- Stream url: ' + streamUrl);
+                  this.log('-------------------------------');
+
+                  this._snapshotTrigger.trigger({
+                    ufv_snapshot_token: SnapshotImage,
+                    ufv_snapshot_camera: this.getName(),
+                    ufv_snapshot_snapshot_url: snapshotUrl,
+                    ufv_snapshot_stream_url: streamUrl
+                  });
+                })
+                .catch(error => reject(error));
+            })
+            .catch(error => reject(error));
+        })
+        .catch(error => reject(error));
+    });
   }
 
   async _createSnapshotImage() {
@@ -96,20 +133,6 @@ class Camera extends Homey.Device {
     this.log('Created snapshot image.');
   }
 
-  _triggerSnapshotflow()
-  {
-    // Action 'take snapshot'
-    new Homey.FlowCardAction(UfvConstants.ACTION_TAKE_SNAPSHOT)
-      .register()
-      .registerRunListener((args, state) => { // eslint-disable-line no-unused-vars
-        Api.snapshot(args.device.getData().id, args.width)
-          .then(buffer => this._onSnapshotBuffer(this.camera, buffer))
-          .catch(this.error.bind(this, 'Could not take snapshot.'));
-
-        return Promise.resolve(true);
-      });
-  }
-
   onMotionStart() {
     this.log('onMotionStart');
     this.setCapabilityValue('alarm_motion', true);
@@ -134,7 +157,6 @@ class Camera extends Homey.Device {
       this.setCapabilityValue("last_motion_at", start).catch(this.log);
       this.onMotionStart();
       Api.setLastMotionAt(start);
-      this._triggerSnapshotflow();
     }
     else if (end > lastMotionAt) {
       this.onMotionEnd();

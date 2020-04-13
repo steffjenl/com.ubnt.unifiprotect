@@ -1,6 +1,5 @@
 env.json
 .vscode/*
-node_modules
 .editorconfig
 .idea/
 test.js
