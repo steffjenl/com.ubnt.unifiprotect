@@ -25,7 +25,7 @@ class UniFiProtect extends Homey.App {
 
     // Subscribe to credentials updates
     Homey.ManagerSettings.on('set', key => {
-      if (key === 'ufv:credentials') {
+      if (key === 'ufp:credentials') {
         this._login();
       }
     });
@@ -38,14 +38,14 @@ class UniFiProtect extends Homey.App {
     this.log('Logging in...');
 
     // Validate NVR IP address
-    const nvrip = Homey.ManagerSettings.get('ufv:nvrip');
+    const nvrip = Homey.ManagerSettings.get('ufp:nvrip');
     if (!nvrip) {
       this.log('NVR IP address not set.');
       return;
     }
 
     // Validate NVR credentials
-    const credentials = Homey.ManagerSettings.get('ufv:credentials');
+    const credentials = Homey.ManagerSettings.get('ufp:credentials');
     if (!credentials) {
       this.log('Credentials not set.');
       return;
@@ -71,16 +71,16 @@ class UniFiProtect extends Homey.App {
     this.api.getMotionEvents()
       .then(motions => {
         motions.forEach(motion => {
-          Homey.ManagerDrivers.getDriver('protectcamera').onParseTriggerMotionData(motion.camera, motion.start, motion.end);
+          Homey.ManagerDrivers.getDriver('protectcamera').onParseTriggerMotionData(motion.camera, motion.start, motion.end, motion.thumbnail, motion.heatmap, motion.score);
         });
       })
-      .catch(error => this.log(error));
+      .catch(error => this.error(error));
   }
 
   _motionLoop() {
     setInterval(() => {
       this._checkMotion();
-    }, 5000);
+    }, 1000);
   }
 
   _onConnectionError(error) {

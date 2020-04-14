@@ -38,13 +38,40 @@ class Camera extends Homey.Device {
       });
 
     await this._createSnapshotImage();
+    await this._createMissingCapabilities();
+  }
+
+  async _createMissingCapabilities() {
+    if (!this.hasCapability("last_motion_score")) {
+      this.addCapability("last_motion_score");
+      this.log('created capability last_motion_score for ' + this.getName());
+    }
+
+    if (!this.hasCapability("last_motion_thumbnail")) {
+      this.addCapability("last_motion_thumbnail");
+      this.log('created capability last_motion_thumbnail for ' + this.getName());
+    }
+    if (!this.hasCapability("last_motion_heatmap")) {
+      this.addCapability("last_motion_heatmap");
+      this.log('created capability last_motion_heatmap for ' + this.getName());
+    }
+    if (!this.hasCapability("last_motion_datetime")) {
+      this.addCapability("last_motion_datetime");
+      this.log('created capability last_motion_datetime for ' + this.getName());
+    }
   }
 
   _onSnapshotBuffer(camera) {
     return new Promise((resolve, reject) => {
       let snapshotUrl = null;
       let streamUrl = null;
-      Api.getSnapShotUrl(camera)
+      let thumbnailId = null;
+
+      if (this.hasCapability("last_motion_thumbnail")) {
+        thumbnailId = this.getCapabilityValue("last_motion_thumbnail");
+      }
+
+      Api.getCameraSnapshot(camera, thumbnailId)
         .then(address => {
           snapshotUrl = address
           Api.getStreamUrl(camera)
@@ -52,13 +79,6 @@ class Camera extends Homey.Device {
               streamUrl = address
               const SnapshotImage = new Homey.Image();
               SnapshotImage.setStream(async stream => {
-                // Obtain snapshot URL
-                let snapshotUrl = null;
-
-                await Api.createSnapshotUrl(this.camera)
-                  .then(url => { snapshotUrl = url; })
-                  .catch(error => reject(error));
-
                 if (!snapshotUrl) {
                   throw new Error('Invalid snapshot url.');
                 }
@@ -79,6 +99,7 @@ class Camera extends Homey.Device {
 
                   this.log('------ _onSnapshotBuffer ------');
                   this.log('- Camera name: ' + this.getName());
+                  this.log('- thumbnail id: ' + thumbnailId);
                   this.log('- Snapshot url: ' + snapshotUrl);
                   this.log('- Stream url: ' + streamUrl);
                   this.log('-------------------------------');
@@ -149,18 +170,31 @@ class Camera extends Homey.Device {
       Homey.__(`events.camera.${String(status.recordingIndicator).toLowerCase()}`));
   }
 
-  onMotionDetected(start, end) {
-    let lastMotionAt = this.getCapabilityValue("last_motion_at");
+  onMotionDetected(start, end, motionThumbnail, motionHeatmap, motionScore) {
+    const lastMotionAt = this.getCapabilityValue("last_motion_at");
+
+    if (!lastMotionAt)
+    {
+      console.log("set last_motion_at to last datetime: " + this.getData().id);
+      if (this.hasCapability("last_motion_at")) this.setCapabilityValue("last_motion_at", end).catch(this.error);
+      //return;
+    }
+
     //Check if the event date is newer
     if (start > lastMotionAt) {
       console.log("new motion detected on camera: " + this.getData().id);
-      this.setCapabilityValue("last_motion_at", start).catch(this.log);
+      const lastMotion = new Date(start);
+      if (this.hasCapability("last_motion_at")) this.setCapabilityValue("last_motion_at", start).catch(this.error);
+      if (this.hasCapability("last_motion_score")) this.setCapabilityValue("last_motion_score", motionScore).catch(this.error);
+      if (this.hasCapability("last_motion_thumbnail")) this.setCapabilityValue("last_motion_thumbnail", motionThumbnail).catch(this.error);
+      if (this.hasCapability("last_motion_heatmap")) this.setCapabilityValue("last_motion_heatmap", motionHeatmap).catch(this.error);
+      if (this.hasCapability("last_motion_datetime")) this.setCapabilityValue("last_motion_datetime", lastMotion.toLocaleDateString()).catch(this.error);
       this.onMotionStart();
       Api.setLastMotionAt(start);
     }
     else if (end > lastMotionAt) {
       this.onMotionEnd();
-      this.setCapabilityValue("last_motion_at", end).catch(this.log);
+      if (this.hasCapability("last_motion_at")) this.setCapabilityValue("last_motion_at", end).catch(this.error);
       Api.setLastMotionAt(end);
     }
   }

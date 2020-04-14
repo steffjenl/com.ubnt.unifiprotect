@@ -37,7 +37,7 @@
     "security",
     "video"
   ],
-  "version": "1.0.2",
+  "version": "1.0.4",
   "compatibility": ">=1.5.0",
   "author": {
     "name": "Stèphan Eizinga",
@@ -54,6 +54,13 @@
         "email": "j.brosens+unifiprotect@gmail.com"
       }
     ]
+  },
+  "contributing": {
+    "donate": {
+      "paypal": {
+        "username": "steffjenl"
+      }
+    }
   },
   "bugs": {
     "url": "https://github.com/steffjenl/com.ubnt.unifiprotect/issues"

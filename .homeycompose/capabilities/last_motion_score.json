@@ -1,0 +1,9 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Last motion score",
+    "nl": "Laatste beweging score"
+  },
+  "getable": true,
+  "setable": false
+}

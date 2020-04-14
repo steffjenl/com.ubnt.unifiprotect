@@ -17,7 +17,7 @@ class NvrDriver extends Homey.Driver {
 
     // Create device from NVR server properties
     const createDevice = async credentials => {
-      const nvrip = Homey.ManagerSettings.get('ufv:nvrip');
+      const nvrip = Homey.ManagerSettings.get('ufp:nvrip');
       this.log(nvrip);
       await this.api.login(nvrip, credentials.username, credentials.password);
       await this.api.getBootstrapInfo();
@@ -35,7 +35,7 @@ class NvrDriver extends Homey.Driver {
       this.log(`onShowView [${viewId}]`);
 
       if (viewId === 'login') {
-        socket.emit('nvrip', Homey.ManagerSettings.get('ufv:nvrip'));
+        socket.emit('nvrip', Homey.ManagerSettings.get('ufp:nvrip'));
       }
       callback();
     });
@@ -45,7 +45,7 @@ class NvrDriver extends Homey.Driver {
       this.log('onCredentials');
 
       // Store credentials in settings
-      Homey.ManagerSettings.set('ufv:credentials', credentials);
+      Homey.ManagerSettings.set('ufp:credentials', credentials);
       callback();
 
       createDevice(credentials);
@@ -59,9 +59,9 @@ class NvrDriver extends Homey.Driver {
     // Perform when NVR is discovered
     this.api.on(UfvConstants.DEVICE_NVR, nvr => {
       this.log('onNvr');
-      Homey.ManagerSettings.set('ufv:nvrip', nvr.ip);
+      Homey.ManagerSettings.set('ufp:nvrip', nvr.ip);
 
-      const credentials = Homey.ManagerSettings.get('ufv:credentials');
+      const credentials = Homey.ManagerSettings.get('ufp:credentials');
       if (credentials) {
         createDevice(credentials);
       } else {
@@ -79,7 +79,7 @@ class NvrDriver extends Homey.Driver {
     if (!this.server) {
       this.server = await this.api.getServer();
     }
-    const device = this.getDevice({ id: String(this.server._id) });
+    const device = this.getDevice({ id: String(this.server.id) });
     if (device instanceof Error) return;
 
     device.onServer(server);

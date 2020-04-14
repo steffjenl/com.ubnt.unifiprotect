@@ -4,5 +4,11 @@
   },
   "1.0.1": {
     "en": "New icons"
+  },
+  "1.0.3": {
+    "en": "new icons, some bug fixxes"
+  },
+  "1.0.4": {
+    "en": "when motion is detected using the thumbnail if exists. "
   }
 }

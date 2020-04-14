@@ -53,7 +53,7 @@
 
         function onHomeyReady(Homey) {
             const readSettings = () => {
-                Homey.get('ufv:nvrip', (error, nvrip) => {
+                Homey.get('ufp:nvrip', (error, nvrip) => {
                     if (error) return Homey.alert(error);
 
                     if (nvrip) {
@@ -63,7 +63,7 @@
                     }
                 });
 
-                Homey.get('ufv:credentials', (error, credentials) => {
+                Homey.get('ufp:credentials', (error, credentials) => {
                     if (error) return Homey.alert(error);
 
                     if (credentials) {
@@ -76,7 +76,7 @@
             }
 
             const saveSettings = () => {
-                Homey.set('ufv:nvrip', txtNvrIp.value, (error, result) => {
+                Homey.set('ufp:nvrip', txtNvrIp.value, (error, result) => {
                     if (error) return Homey.alert(error);
                     console.log('[SETTINGS] UniFi Cloud Key IP address saved.');
                 });
@@ -86,7 +86,7 @@
                     'password': txtPassword.value
                 };
 
-                Homey.set('ufv:credentials', credentials, (error, result) => {
+                Homey.set('ufp:credentials', credentials, (error, result) => {
                     if (error) return Homey.alert(error);
                     console.log('[SETTINGS] credentials saved.');
                 });

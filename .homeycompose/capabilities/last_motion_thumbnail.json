@@ -1,0 +1,9 @@
+{
+  "type": "string",
+  "title": {
+    "en": "Last motion thumbnail",
+    "nl": "Laatste beweging afbeelding"
+  },
+  "getable": false,
+  "setable": false
+}

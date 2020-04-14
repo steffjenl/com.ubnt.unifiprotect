@@ -13,7 +13,7 @@ class CameraDriver extends Homey.Driver {
   onPair(socket) {
     // Validate NVR IP address
     socket.on('validate', (data, callback) => {
-      const nvrip = Homey.ManagerSettings.get('ufv:nvrip');
+      const nvrip = Homey.ManagerSettings.get('ufp:nvrip');
       callback(null, nvrip ? 'ok' : 'nok');
     });
 
@@ -65,13 +65,13 @@ class CameraDriver extends Homey.Driver {
     device.onCamera(status);
   }
 
-  onParseTriggerMotionData(camera, motionStart, motionEnd) {
+  onParseTriggerMotionData(camera, motionStart, motionEnd, motionThumbnail, motionHeatmap, motionScore) {
     const device = this.getDevice({
       id: camera
     });
 
     if (Object.prototype.hasOwnProperty.call(device, '_events')) {
-      device.onMotionDetected(motionStart, motionEnd);
+      device.onMotionDetected(motionStart, motionEnd, motionThumbnail, motionHeatmap, motionScore);
     }
     else{
       this.log("Unknown device: " + camera);

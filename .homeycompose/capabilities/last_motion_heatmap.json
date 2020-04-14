@@ -1,0 +1,9 @@
+{
+  "type": "string",
+  "title": {
+    "en": "Last motion heatmap",
+    "nl": "Laatste beweging hittemap"
+  },
+  "getable": false,
+  "setable": false
+}
