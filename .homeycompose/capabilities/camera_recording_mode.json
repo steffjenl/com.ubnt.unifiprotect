@@ -1,8 +1,8 @@
 {
-  "type": "boolean",
+  "type": "string",
   "title": {
-    "en": "Recording status",
-    "nl": "Opnamestatus"
+    "en": "Recording mode",
+    "nl": "Opnamemodus"
   },
   "getable": true,
   "setable": false,

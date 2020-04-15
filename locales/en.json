@@ -28,7 +28,10 @@
             "ftr_inprogress": "Full time",
             "disabled": "Disabled",
             "failed": "Failed",
-            "done": "Done"
+            "done": "Done",
+            "always": "Always",
+            "motion": "Motion",
+            "never": "Never"
         },
         "health": {
             "unknown": "Unknown",

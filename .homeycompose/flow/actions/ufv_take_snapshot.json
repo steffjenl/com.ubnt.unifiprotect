@@ -9,6 +9,16 @@
       "name": "device",
       "type": "device",
       "filter": "driver_id=protectcamera"
+    },
+    {
+      "name": "width",
+      "type": "number",
+      "min": 0,
+      "max": 1920,
+      "placeholder": {
+        "en": "Width in pixels",
+        "nl": "Breedte in pixels"
+      }
     }
   ]
 }

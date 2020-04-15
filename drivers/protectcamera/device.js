@@ -20,7 +20,7 @@ class Camera extends Homey.Device {
     new Homey.FlowCardAction(UfvConstants.ACTION_TAKE_SNAPSHOT)
       .register()
       .registerRunListener((args, state) => { // eslint-disable-line no-unused-vars
-        this._onSnapshotBuffer(this.camera)
+        this._onSnapshotBuffer(this.camera, args.width)
           .catch(this.error.bind(this, 'Could not take snapshot.'));
 
         return Promise.resolve(true);
@@ -55,67 +55,70 @@ class Camera extends Homey.Device {
       this.addCapability("last_motion_heatmap");
       this.log('created capability last_motion_heatmap for ' + this.getName());
     }
-    if (!this.hasCapability("last_motion_datetime")) {
-      this.addCapability("last_motion_datetime");
-      this.log('created capability last_motion_datetime for ' + this.getName());
+    if (this.hasCapability("last_motion_datetime")) {
+      this.removeCapability("last_motion_datetime");
+      this.log('removed capability last_motion_datetime for ' + this.getName());
+    }
+    if (!this.hasCapability("last_motion_date")) {
+      this.addCapability("last_motion_date");
+      this.log('created capability last_motion_date for ' + this.getName());
+    }
+    if (!this.hasCapability("last_motion_time")) {
+      this.addCapability("last_motion_time");
+      this.log('created capability last_motion_time for ' + this.getName());
+    }
+    if (!this.hasCapability("camera_recording_mode")) {
+      this.addCapability("camera_recording_mode");
+      this.log('created capability camera_recording_mode for ' + this.getName());
     }
   }
 
-  _onSnapshotBuffer(camera) {
+  _onSnapshotBuffer(camera, width) {
     return new Promise((resolve, reject) => {
       let snapshotUrl = null;
       let streamUrl = null;
-      let thumbnailId = null;
 
-      if (this.hasCapability("last_motion_thumbnail")) {
-        thumbnailId = this.getCapabilityValue("last_motion_thumbnail");
-      }
+      Api.getBootstrapInfo().then( bootstrap => {
+        Api.getSnapShotUrl(camera, width)
+          .then(snapshotUrl => {
+            Api.getStreamUrl(camera)
+              .then(streamUrl => {
+                const SnapshotImage = new Homey.Image();
+                SnapshotImage.setStream(async stream => {
+                  if (!snapshotUrl) {
+                    throw new Error('Invalid snapshot url.');
+                  }
 
-      Api.getCameraSnapshot(camera, thumbnailId)
-        .then(address => {
-          snapshotUrl = address
-          Api.getStreamUrl(camera)
-            .then(address => {
-              streamUrl = address
-              const SnapshotImage = new Homey.Image();
-              SnapshotImage.setStream(async stream => {
-                if (!snapshotUrl) {
-                  throw new Error('Invalid snapshot url.');
-                }
+                  const agent = new https.Agent({
+                    rejectUnauthorized: false
+                  })
 
-                const agent = new https.Agent({
-                  rejectUnauthorized: false
-                })
+                  // Fetch image
+                  const res = await fetch(snapshotUrl, { agent });
+                  if (!res.ok) throw new Error('Could not fetch snapshot image.');
 
-                // Fetch image
-                const res = await fetch(snapshotUrl, { agent });
-                if (!res.ok) throw new Error('Could not fetch snapshot image.');
+                  return res.body.pipe(stream);
+                });
+                SnapshotImage.register()
+                  .then(() => {
+                    Homey.app.snapshotToken.setValue(SnapshotImage);
 
-                return res.body.pipe(stream);
-              });
-              SnapshotImage.register()
-                .then(() => {
-                  Homey.app.snapshotToken.setValue(SnapshotImage);
+                    this.log('------ _onSnapshotBuffer ------');
+                    this.log('- Camera name: ' + this.getName());
+                    this.log('- Snapshot url: ' + snapshotUrl);
+                    this.log('- Stream url: ' + streamUrl);
+                    this.log('-------------------------------');
 
-                  this.log('------ _onSnapshotBuffer ------');
-                  this.log('- Camera name: ' + this.getName());
-                  this.log('- thumbnail id: ' + thumbnailId);
-                  this.log('- Snapshot url: ' + snapshotUrl);
-                  this.log('- Stream url: ' + streamUrl);
-                  this.log('-------------------------------');
-
-                  this._snapshotTrigger.trigger({
-                    ufv_snapshot_token: SnapshotImage,
-                    ufv_snapshot_camera: this.getName(),
-                    ufv_snapshot_snapshot_url: snapshotUrl,
-                    ufv_snapshot_stream_url: streamUrl
-                  });
-                })
-                .catch(error => reject(error));
-            })
-            .catch(error => reject(error));
-        })
-        .catch(error => reject(error));
+                    this._snapshotTrigger.trigger({
+                      ufv_snapshot_token: SnapshotImage,
+                      ufv_snapshot_camera: this.getName(),
+                      ufv_snapshot_snapshot_url: snapshotUrl,
+                      ufv_snapshot_stream_url: streamUrl
+                    });
+                  }).catch(error => reject(error));
+              }).catch(error => reject(error));
+          }).catch(error => reject(error));
+      }).catch(error => reject(error));
     });
   }
 
@@ -162,6 +165,7 @@ class Camera extends Homey.Device {
   onMotionEnd() {
     this.log('onMotionEnd');
     this.setCapabilityValue('alarm_motion', false);
+    Homey.app._refreshCapabilities();
   }
 
   onCamera(status) {
@@ -171,32 +175,47 @@ class Camera extends Homey.Device {
   }
 
   onMotionDetected(start, end, motionThumbnail, motionHeatmap, motionScore) {
-    const lastMotionAt = this.getCapabilityValue("last_motion_at");
+    let lastMotionAt = this.getCapabilityValue("last_motion_at");
 
     if (!lastMotionAt)
     {
-      console.log("set last_motion_at to last datetime: " + this.getData().id);
-      if (this.hasCapability("last_motion_at")) this.setCapabilityValue("last_motion_at", end).catch(this.error);
-      //return;
+      this.log("set last_motion_at to last datetime: " + this.getData().id);
+      if (this.hasCapability("last_motion_at")) this.setCapabilityValue("last_motion_at", start).catch(this.error);
+      return;
     }
 
     //Check if the event date is newer
     if (start > lastMotionAt) {
-      console.log("new motion detected on camera: " + this.getData().id);
       const lastMotion = new Date(start);
-      if (this.hasCapability("last_motion_at")) this.setCapabilityValue("last_motion_at", start).catch(this.error);
-      if (this.hasCapability("last_motion_score")) this.setCapabilityValue("last_motion_score", motionScore).catch(this.error);
+      this.log("new motion detected on camera: " + this.getData().id + " on " + lastMotion.toLocaleString());
+
+      this.setCapabilityValue("last_motion_at", start).catch(this.error);
+      if (this.hasCapability("last_motion_score")) this.setCapabilityValue("last_motion_score", Number(motionScore)).catch(this.error);
       if (this.hasCapability("last_motion_thumbnail")) this.setCapabilityValue("last_motion_thumbnail", motionThumbnail).catch(this.error);
       if (this.hasCapability("last_motion_heatmap")) this.setCapabilityValue("last_motion_heatmap", motionHeatmap).catch(this.error);
-      if (this.hasCapability("last_motion_datetime")) this.setCapabilityValue("last_motion_datetime", lastMotion.toLocaleDateString()).catch(this.error);
+      if (this.hasCapability("last_motion_date")) this.setCapabilityValue("last_motion_date", lastMotion.toLocaleDateString()).catch(this.error);
+      if (this.hasCapability("last_motion_time")) this.setCapabilityValue("last_motion_time", lastMotion.toLocaleTimeString()).catch(this.error);
       this.onMotionStart();
       Api.setLastMotionAt(start);
     }
     else if (end > lastMotionAt) {
+      const lastMotion = new Date(end);
+      this.log("motion detected ended on camera: " + this.getData().id + " on " + lastMotion.toLocaleString());
       this.onMotionEnd();
-      if (this.hasCapability("last_motion_at")) this.setCapabilityValue("last_motion_at", end).catch(this.error);
+      this.setCapabilityValue("last_motion_at", end).catch(this.error);
       Api.setLastMotionAt(end);
     }
+  }
+
+  onRefreshCamera(cameraData) {
+    if (this.hasCapability("camera_recording_status")) {
+      this.setCapabilityValue('camera_recording_status', cameraData.isRecording);
+    }
+    if (this.hasCapability("camera_recording_mode")) {
+      this.setCapabilityValue('camera_recording_mode',
+        Homey.__(`events.camera.${String(cameraData.recordingSettings.mode).toLowerCase()}`));
+    }
+
   }
 }
 

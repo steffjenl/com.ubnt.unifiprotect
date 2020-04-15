@@ -59,6 +59,8 @@ class UniFiProtect extends Homey.App {
              this.log('Bootstrap loaded.');
              this._checkMotion();
              this._motionLoop()
+             this._refreshCapabilities();
+             this._refreshCapabilitiesLoop();
            })
            .catch(error => this.error(error));
          this.log('Logged in.');
@@ -71,7 +73,7 @@ class UniFiProtect extends Homey.App {
     this.api.getMotionEvents()
       .then(motions => {
         motions.forEach(motion => {
-          Homey.ManagerDrivers.getDriver('protectcamera').onParseTriggerMotionData(motion.camera, motion.start, motion.end, motion.thumbnail, motion.heatmap, motion.score);
+            Homey.ManagerDrivers.getDriver('protectcamera').onParseTriggerMotionData(motion.camera, motion.start, motion.end, motion.thumbnail, motion.heatmap, motion.score);
         });
       })
       .catch(error => this.error(error));
@@ -81,6 +83,22 @@ class UniFiProtect extends Homey.App {
     setInterval(() => {
       this._checkMotion();
     }, 1000);
+  }
+
+  _refreshCapabilities() {
+    this.api.getCameras()
+      .then(cameras => {
+        cameras.forEach(camera => {
+          Homey.ManagerDrivers.getDriver('protectcamera').onParseTriggerCameraData(camera);
+        });
+      })
+      .catch(error => this.error(error));
+  }
+
+  _refreshCapabilitiesLoop() {
+    setInterval(() => {
+      this._checkMotion();
+    }, 5000);
   }
 
   _onConnectionError(error) {

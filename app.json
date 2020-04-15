@@ -176,6 +176,16 @@
             "name": "device",
             "type": "device",
             "filter": "driver_id=protectcamera"
+          },
+          {
+            "name": "width",
+            "type": "number",
+            "min": 0,
+            "max": 1920,
+            "placeholder": {
+              "en": "Width in pixels",
+              "nl": "Breedte in pixels"
+            }
           }
         ]
       }
@@ -248,8 +258,19 @@
     }
   ],
   "capabilities": {
-    "camera_recording_status": {
+    "camera_recording_mode": {
       "type": "string",
+      "title": {
+        "en": "Recording mode",
+        "nl": "Opnamemodus"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/recording.svg"
+    },
+    "camera_recording_status": {
+      "type": "boolean",
       "title": {
         "en": "Recording status",
         "nl": "Opnamestatus"
@@ -265,10 +286,10 @@
         "en": "Last motion at",
         "nl": "Laatste beweging op"
       },
-      "getable": false,
+      "getable": true,
       "setable": false
     },
-    "last_motion_datetime": {
+    "last_motion_date": {
       "type": "string",
       "title": {
         "en": "Last motion at",
@@ -302,6 +323,15 @@
         "nl": "Laatste beweging afbeelding"
       },
       "getable": false,
+      "setable": false
+    },
+    "last_motion_time": {
+      "type": "string",
+      "title": {
+        "en": "Last motion on",
+        "nl": "Laatste beweging om"
+      },
+      "getable": true,
       "setable": false
     },
     "nvr_cpu_load": {

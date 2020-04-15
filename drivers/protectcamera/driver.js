@@ -77,6 +77,19 @@ class CameraDriver extends Homey.Driver {
       this.log("Unknown device: " + camera);
     }
   }
+
+  onParseTriggerCameraData(cameraData) {
+    const device = this.getDevice({
+      id: cameraData.id
+    });
+
+    if (Object.prototype.hasOwnProperty.call(device, '_events')) {
+      device.onRefreshCamera(cameraData);
+    }
+    else{
+      this.log("Unknown device: " + camera);
+    }
+  }
 }
 
 module.exports = CameraDriver;

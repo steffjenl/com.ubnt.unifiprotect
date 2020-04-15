@@ -28,7 +28,10 @@
             "ftr_inprogress": "Continu",
             "disabled": "Uitgeschakeld",
             "failed": "Mislukt",
-            "done": "Klaar"
+            "done": "Klaar",
+            "always": "Altijd",
+            "motion": "Bij beweging",
+            "never": "Nooit"
         },
         "health": {
             "unknown": "Onbekend",
