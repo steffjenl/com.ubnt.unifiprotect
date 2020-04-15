@@ -3,3 +3,4 @@ env.json
 .editorconfig
 .idea/
 test.js
+node_modules/
