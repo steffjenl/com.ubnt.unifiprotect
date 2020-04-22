@@ -1,5 +1,4 @@
-'use strict';
-
+// eslint-disable-next-line node/no-unpublished-require,strict
 const Homey = require('homey');
 const UfPapi = require('./lib/ufpapi');
 const UfvConstants = require('./lib/ufvconstants');
@@ -51,29 +50,52 @@ class UniFiProtect extends Homey.App {
       return;
     }
 
-    // Log in to NVR
-    this.api.login(nvrip, credentials.username, credentials.password)
-      .then(() => {
-         this.api.getBootstrapInfo()
-           .then(() => {
-             this.log('Bootstrap loaded.');
-             this._checkMotion();
-             this._motionLoop()
-             this._refreshCapabilities();
-             this._refreshCapabilitiesLoop();
-           })
-           .catch(error => this.error(error));
-         this.log('Logged in.');
-      })
-      .catch(error => this.error(error));
+    // Validate NVR IP address
+    const nvrUseProxy = Homey.ManagerSettings.get('ufp:useproxy');
+
+    if (nvrUseProxy === 'true') {
+      // Log in to NVR
+      this.api.loginProxy(nvrip, credentials.username, credentials.password)
+        .then(() => {
+          this.api.getBootstrapInfo()
+            .then(() => {
+              this.log('Bootstrap loaded.');
+              this._checkMotion();
+              this._motionLoop();
+              this._refreshCapabilities();
+              this._refreshCapabilitiesLoop();
+              this._refreshCookieLoop();
+            })
+            .catch(error => this.error(error));
+          this.log('Logged in.');
+        })
+        .catch(error => this.error(error));
+    }
+    else {
+      // Log in to NVR
+      this.api.login(nvrip, credentials.username, credentials.password)
+        .then(() => {
+          this.api.getBootstrapInfo()
+            .then(() => {
+              this.log('Bootstrap loaded.');
+              this._checkMotion();
+              this._motionLoop();
+              this._refreshCapabilities();
+              this._refreshCapabilitiesLoop();
+            })
+            .catch(error => this.error(error));
+          this.log('Logged in.');
+        })
+        .catch(error => this.error(error));
+    }
   }
 
   _checkMotion() {
-    //Get Last Motion
+    // Get Last Motion
     this.api.getMotionEvents()
       .then(motions => {
         motions.forEach(motion => {
-            Homey.ManagerDrivers.getDriver('protectcamera').onParseTriggerMotionData(motion.camera, motion.start, motion.end, motion.thumbnail, motion.heatmap, motion.score);
+          Homey.ManagerDrivers.getDriver('protectcamera').onParseTriggerMotionData(motion.camera, motion.start, motion.end, motion.thumbnail, motion.heatmap, motion.score);
         });
       })
       .catch(error => this.error(error));
@@ -99,6 +121,12 @@ class UniFiProtect extends Homey.App {
     setInterval(() => {
       this._checkMotion();
     }, 5000);
+  }
+
+  _refreshCookieLoop() {
+    setInterval(() => {
+      this._login();
+    }, 2700000);
   }
 
   _onConnectionError(error) {

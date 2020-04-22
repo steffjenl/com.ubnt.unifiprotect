@@ -1,0 +1,13 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Microphone volume",
+    "nl": "Microfoon volume"
+  },
+  "getable": true,
+  "setable": true,
+  "uiComponent": "slider",
+  "min": 0,
+  "max": 100,
+  "icon": "/assets/microphone.svg"
+}

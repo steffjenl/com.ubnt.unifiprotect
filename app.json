@@ -37,7 +37,7 @@
     "security",
     "video"
   ],
-  "version": "1.0.4",
+  "version": "1.0.5",
   "compatibility": ">=1.5.0",
   "author": {
     "name": "Stèphan Eizinga",
@@ -241,7 +241,7 @@
       },
       "pair": [
         {
-          "id": "login"
+          "id": "validate"
         },
         {
           "id": "list_devices",
@@ -258,6 +258,30 @@
     }
   ],
   "capabilities": {
+    "camera_microphone_status": {
+      "type": "boolean",
+      "title": {
+        "en": "Microphone status",
+        "nl": "Microfoonstatus"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/microphone.svg"
+    },
+    "camera_microphone_volume": {
+      "type": "number",
+      "title": {
+        "en": "Microphone volume",
+        "nl": "Microfoon volume"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "slider",
+      "min": 0,
+      "max": 100,
+      "icon": "/assets/microphone.svg"
+    },
     "camera_recording_mode": {
       "type": "string",
       "title": {

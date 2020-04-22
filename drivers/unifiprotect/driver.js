@@ -1,5 +1,4 @@
-'use strict';
-
+// eslint-disable-next-line node/no-unpublished-require,strict
 const Homey = require('homey');
 const UfvConstants = require('../../lib/ufvconstants');
 
@@ -17,10 +16,6 @@ class NvrDriver extends Homey.Driver {
 
     // Create device from NVR server properties
     const createDevice = async credentials => {
-      const nvrip = Homey.ManagerSettings.get('ufp:nvrip');
-      this.log(nvrip);
-      await this.api.login(nvrip, credentials.username, credentials.password);
-      await this.api.getBootstrapInfo();
       this.server = await this.api.getServer();
 
       this.device = {

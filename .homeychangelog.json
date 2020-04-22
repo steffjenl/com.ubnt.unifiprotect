@@ -10,5 +10,8 @@
   },
   "1.0.4": {
     "en": "when motion is detected using the thumbnail if exists. "
+  },
+  "1.0.5": {
+    "en": "added some more compatibilities"
   }
 }

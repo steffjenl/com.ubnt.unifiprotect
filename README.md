@@ -5,7 +5,8 @@ Adds support for Ubiquiti UniFi Protect devices in Homey.
 ## Supported devices
 
 * UniFi® Protect (Network Video Recorder):
-	* UVC‑NVR
+	* UniFi® Cloud Key v2 Pro
+	* UniFi® Dream Machine Pro
 * UniFi® Video Camera G3 series:
 	* UVC-G3
 	* UVC-G3-AF
@@ -30,6 +31,12 @@ Adds support for Ubiquiti UniFi Protect devices in Homey.
 * A flow action card is available to set a camera's recording mode, being one of 'Don't record', 'Always record' or 'Record only motion'.
 
 ## Troubleshooting / FAQ
+* Q: I am using UniFi® Dream Machine Pro and can't connect.
+* A: You must select 'Use Proxy' in the Application Settings.
+
+
+* Q:
+* A:
 
 ## Feedback
 

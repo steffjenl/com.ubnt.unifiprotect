@@ -3,7 +3,9 @@ Use your UniFi Protect cameras as motion alert sensors.
 Monitor your UniFi Cloud Key's health in a dedicated, new UniFi Cloud Key device.
 
 Supported device models:
-- UniFi® Cloud Key v2 Pro
+- UniFi® Protect (Network Video Recorder):
+	- UniFi® Cloud Key v2 Pro
+	- UniFi® Dream Machine Pro
 - UniFi® Video Camera G3 series:
 	- UVC-G3
 	- UVC-G3-AF

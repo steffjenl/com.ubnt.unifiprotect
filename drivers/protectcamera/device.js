@@ -1,5 +1,4 @@
-'use strict';
-
+// eslint-disable-next-line node/no-unpublished-require,strict
 const Homey = require('homey');
 const fetch = require('node-fetch');
 const https = require('https');
@@ -37,48 +36,60 @@ class Camera extends Homey.Device {
         return Promise.resolve(true);
       });
 
+    this.registerCapabilityListener('camera_microphone_volume', async (value) => {
+      Api.setMicVolume(this.camera, value).catch(this.error);
+    });
+
     await this._createSnapshotImage();
     await this._createMissingCapabilities();
   }
 
   async _createMissingCapabilities() {
-    if (!this.hasCapability("last_motion_score")) {
-      this.addCapability("last_motion_score");
-      this.log('created capability last_motion_score for ' + this.getName());
+    if (!this.hasCapability('last_motion_score')) {
+      this.addCapability('last_motion_score');
+      this.log(`created capability last_motion_score for ${this.getName()}`);
     }
 
-    if (!this.hasCapability("last_motion_thumbnail")) {
-      this.addCapability("last_motion_thumbnail");
-      this.log('created capability last_motion_thumbnail for ' + this.getName());
+    if (!this.hasCapability('last_motion_thumbnail')) {
+      this.addCapability('last_motion_thumbnail');
+      this.log(`created capability last_motion_thumbnail for ${this.getName()}`);
     }
-    if (!this.hasCapability("last_motion_heatmap")) {
-      this.addCapability("last_motion_heatmap");
-      this.log('created capability last_motion_heatmap for ' + this.getName());
+    if (!this.hasCapability('last_motion_heatmap')) {
+      this.addCapability('last_motion_heatmap');
+      this.log(`created capability last_motion_heatmap for ${this.getName()}`);
     }
-    if (this.hasCapability("last_motion_datetime")) {
-      this.removeCapability("last_motion_datetime");
-      this.log('removed capability last_motion_datetime for ' + this.getName());
+    if (this.hasCapability('last_motion_datetime')) {
+      this.removeCapability('last_motion_datetime');
+      this.log(`removed capability last_motion_datetime for ${this.getName()}`);
     }
-    if (!this.hasCapability("last_motion_date")) {
-      this.addCapability("last_motion_date");
-      this.log('created capability last_motion_date for ' + this.getName());
+    if (!this.hasCapability('last_motion_date')) {
+      this.addCapability('last_motion_date');
+      this.log(`created capability last_motion_date for ${this.getName()}`);
     }
-    if (!this.hasCapability("last_motion_time")) {
-      this.addCapability("last_motion_time");
-      this.log('created capability last_motion_time for ' + this.getName());
+    if (!this.hasCapability('last_motion_time')) {
+      this.addCapability('last_motion_time');
+      this.log(`created capability last_motion_time for ${this.getName()}`);
     }
-    if (!this.hasCapability("camera_recording_mode")) {
-      this.addCapability("camera_recording_mode");
-      this.log('created capability camera_recording_mode for ' + this.getName());
+    if (!this.hasCapability('camera_recording_mode')) {
+      this.addCapability('camera_recording_mode');
+      this.log(`created capability camera_recording_mode for ${this.getName()}`);
+    }
+    if (!this.hasCapability('camera_microphone_status')) {
+      this.addCapability('camera_microphone_status');
+      this.log(`created capability camera_microphone_status for ${this.getName()}`);
+    }
+    if (!this.hasCapability('camera_microphone_volume')) {
+      this.addCapability('camera_microphone_volume');
+      this.log(`created capability camera_microphone_volume for ${this.getName()}`);
     }
   }
 
   _onSnapshotBuffer(camera, width) {
     return new Promise((resolve, reject) => {
-      let snapshotUrl = null;
-      let streamUrl = null;
+      const snapshotUrl = null;
+      const streamUrl = null;
 
-      Api.getBootstrapInfo().then( bootstrap => {
+      Api.getBootstrapInfo().then(bootstrap => {
         Api.getSnapShotUrl(camera, width)
           .then(snapshotUrl => {
             Api.getStreamUrl(camera)
@@ -90,8 +101,8 @@ class Camera extends Homey.Device {
                   }
 
                   const agent = new https.Agent({
-                    rejectUnauthorized: false
-                  })
+                    rejectUnauthorized: false,
+                  });
 
                   // Fetch image
                   const res = await fetch(snapshotUrl, { agent });
@@ -104,16 +115,16 @@ class Camera extends Homey.Device {
                     Homey.app.snapshotToken.setValue(SnapshotImage);
 
                     this.log('------ _onSnapshotBuffer ------');
-                    this.log('- Camera name: ' + this.getName());
-                    this.log('- Snapshot url: ' + snapshotUrl);
-                    this.log('- Stream url: ' + streamUrl);
+                    this.log(`- Camera name: ${this.getName()}`);
+                    this.log(`- Snapshot url: ${snapshotUrl}`);
+                    this.log(`- Stream url: ${streamUrl}`);
                     this.log('-------------------------------');
 
                     this._snapshotTrigger.trigger({
                       ufv_snapshot_token: SnapshotImage,
                       ufv_snapshot_camera: this.getName(),
                       ufv_snapshot_snapshot_url: snapshotUrl,
-                      ufv_snapshot_stream_url: streamUrl
+                      ufv_snapshot_stream_url: streamUrl,
                     });
                   }).catch(error => reject(error));
               }).catch(error => reject(error));
@@ -139,8 +150,8 @@ class Camera extends Homey.Device {
       }
 
       const agent = new https.Agent({
-        rejectUnauthorized: false
-      })
+        rejectUnauthorized: false,
+      });
 
       // Fetch image
       const res = await fetch(snapshotUrl, { agent });
@@ -175,47 +186,51 @@ class Camera extends Homey.Device {
   }
 
   onMotionDetected(start, end, motionThumbnail, motionHeatmap, motionScore) {
-    let lastMotionAt = this.getCapabilityValue("last_motion_at");
+    const lastMotionAt = this.getCapabilityValue('last_motion_at');
 
-    if (!lastMotionAt)
-    {
-      this.log("set last_motion_at to last datetime: " + this.getData().id);
-      if (this.hasCapability("last_motion_at")) this.setCapabilityValue("last_motion_at", start).catch(this.error);
+    if (!lastMotionAt) {
+      this.log(`set last_motion_at to last datetime: ${this.getData().id}`);
+      if (this.hasCapability('last_motion_at')) this.setCapabilityValue('last_motion_at', start).catch(this.error);
       return;
     }
 
-    //Check if the event date is newer
+    // Check if the event date is newer
     if (start > lastMotionAt) {
       const lastMotion = new Date(start);
-      this.log("new motion detected on camera: " + this.getData().id + " on " + lastMotion.toLocaleString());
+      this.log(`new motion detected on camera: ${this.getData().id} on ${lastMotion.toLocaleString()}`);
 
-      this.setCapabilityValue("last_motion_at", start).catch(this.error);
-      if (this.hasCapability("last_motion_score")) this.setCapabilityValue("last_motion_score", Number(motionScore)).catch(this.error);
-      if (this.hasCapability("last_motion_thumbnail")) this.setCapabilityValue("last_motion_thumbnail", motionThumbnail).catch(this.error);
-      if (this.hasCapability("last_motion_heatmap")) this.setCapabilityValue("last_motion_heatmap", motionHeatmap).catch(this.error);
-      if (this.hasCapability("last_motion_date")) this.setCapabilityValue("last_motion_date", lastMotion.toLocaleDateString()).catch(this.error);
-      if (this.hasCapability("last_motion_time")) this.setCapabilityValue("last_motion_time", lastMotion.toLocaleTimeString()).catch(this.error);
+      this.setCapabilityValue('last_motion_at', start).catch(this.error);
+      if (this.hasCapability('last_motion_score') && Number(motionScore) > 0) this.setCapabilityValue('last_motion_score', Number(motionScore)).catch(this.error);
+      if (this.hasCapability('last_motion_thumbnail')) this.setCapabilityValue('last_motion_thumbnail', motionThumbnail).catch(this.error);
+      if (this.hasCapability('last_motion_heatmap')) this.setCapabilityValue('last_motion_heatmap', motionHeatmap).catch(this.error);
+      if (this.hasCapability('last_motion_date')) this.setCapabilityValue('last_motion_date', lastMotion.toLocaleDateString()).catch(this.error);
+      if (this.hasCapability('last_motion_time')) this.setCapabilityValue('last_motion_time', lastMotion.toLocaleTimeString()).catch(this.error);
       this.onMotionStart();
       Api.setLastMotionAt(start);
-    }
-    else if (end > lastMotionAt) {
+    } else if (end > lastMotionAt) {
       const lastMotion = new Date(end);
-      this.log("motion detected ended on camera: " + this.getData().id + " on " + lastMotion.toLocaleString());
+      this.log(`motion detected ended on camera: ${this.getData().id} on ${lastMotion.toLocaleString()}`);
       this.onMotionEnd();
-      this.setCapabilityValue("last_motion_at", end).catch(this.error);
+      this.setCapabilityValue('last_motion_at', end).catch(this.error);
+      if (this.hasCapability('last_motion_score') && Number(motionScore) > 0) this.setCapabilityValue('last_motion_score', Number(motionScore)).catch(this.error);
       Api.setLastMotionAt(end);
     }
   }
 
   onRefreshCamera(cameraData) {
-    if (this.hasCapability("camera_recording_status")) {
+    if (this.hasCapability('camera_recording_status')) {
       this.setCapabilityValue('camera_recording_status', cameraData.isRecording);
     }
-    if (this.hasCapability("camera_recording_mode")) {
+    if (this.hasCapability('camera_recording_mode')) {
       this.setCapabilityValue('camera_recording_mode',
         Homey.__(`events.camera.${String(cameraData.recordingSettings.mode).toLowerCase()}`));
     }
-
+    if (this.hasCapability('camera_microphone_status')) {
+      this.setCapabilityValue('camera_microphone_status', cameraData.isMicEnabled);
+    }
+    if (this.hasCapability('camera_microphone_volume')) {
+      this.setCapabilityValue('camera_microphone_volume', cameraData.micVolume);
+    }
   }
 }
 

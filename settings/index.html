@@ -21,6 +21,13 @@
             <label for="txt_nvrip" data-i18n="settings.nvrip"></label>
             <input id="txt_nvrip" type="text" value="" />
         </div>
+
+      <!-- Use proxy client -->
+      <div class="field row">
+        <label for="txt_nvruseproxy" data-i18n="settings.nvruseproxy"></label>
+        <input id="txt_nvruseproxy" type="checkbox" value="true" />
+      </div>
+
     </fieldset>
 
     <!-- Credentials -->
@@ -49,6 +56,7 @@
         var txtNvrIp = document.getElementById('txt_nvrip');
         var txtUsername = document.getElementById('txt_username');
         var txtPassword = document.getElementById('txt_password');
+        var txtNvrUseProxy = (document.getElementById('txt_nvruseproxy').value === 'true' ? 'true' : 'false');
         var btnApply = document.getElementById('btn_apply');
 
         function onHomeyReady(Homey) {
@@ -76,25 +84,33 @@
             }
 
             const saveSettings = () => {
+              Homey.api('POST', '/settings/validate', { 'hostname': txtNvrIp.value, 'useProxy': txtNvrUseProxy, 'username': txtUsername.value, 'password': txtPassword.value }, function( err, result ) {
+                if( err ) return Homey.alert(err);
                 Homey.set('ufp:nvrip', txtNvrIp.value, (error, result) => {
-                    if (error) return Homey.alert(error);
-                    console.log('[SETTINGS] UniFi Cloud Key IP address saved.');
+                  if (error) return Homey.alert(error);
+                  console.log('[SETTINGS] UniFi Cloud Key IP address saved.');
+                });
+
+                Homey.set('ufp:useproxy', txtNvrUseProxy, (error, result) => {
+                  if (error) return Homey.alert(error);
+                  console.log('[SETTINGS] UniFi Cloud Key Use Proxy Key saved.');
                 });
 
                 const credentials = {
-                    'username': txtUsername.value,
-                    'password': txtPassword.value
+                  'username': txtUsername.value,
+                  'password': txtPassword.value
                 };
 
                 Homey.set('ufp:credentials', credentials, (error, result) => {
-                    if (error) return Homey.alert(error);
-                    console.log('[SETTINGS] credentials saved.');
+                  if (error) return Homey.alert(error);
+                  console.log('[SETTINGS] credentials saved.');
                 });
+                Homey.alert(Homey.__('settings.saved'), 'info');
+              });
             }
 
             btnApply.addEventListener('click', e => {
                 saveSettings();
-                Homey.alert(Homey.__('settings.saved'), 'info');
             });
 
             readSettings();

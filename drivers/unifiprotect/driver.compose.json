@@ -15,7 +15,7 @@
   },
   "pair": [
     {
-      "id": "login"
+      "id": "validate"
     },
     {
       "id": "list_devices",

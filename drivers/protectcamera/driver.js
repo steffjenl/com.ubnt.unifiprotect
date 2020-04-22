@@ -1,5 +1,4 @@
-'use strict';
-
+// eslint-disable-next-line node/no-unpublished-require,strict
 const Homey = require('homey');
 
 class CameraDriver extends Homey.Driver {
@@ -67,27 +66,25 @@ class CameraDriver extends Homey.Driver {
 
   onParseTriggerMotionData(camera, motionStart, motionEnd, motionThumbnail, motionHeatmap, motionScore) {
     const device = this.getDevice({
-      id: camera
+      id: camera,
     });
 
     if (Object.prototype.hasOwnProperty.call(device, '_events')) {
       device.onMotionDetected(motionStart, motionEnd, motionThumbnail, motionHeatmap, motionScore);
-    }
-    else{
-      this.log("Unknown device: " + camera);
+    } else {
+      this.log(`Unknown device: ${camera}`);
     }
   }
 
   onParseTriggerCameraData(cameraData) {
     const device = this.getDevice({
-      id: cameraData.id
+      id: cameraData.id,
     });
 
     if (Object.prototype.hasOwnProperty.call(device, '_events')) {
       device.onRefreshCamera(cameraData);
-    }
-    else{
-      this.log("Unknown device: " + camera);
+    } else {
+      this.log(`Unknown device: ${cameraData.id}`);
     }
   }
 }
