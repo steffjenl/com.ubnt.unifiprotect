@@ -25,7 +25,7 @@
       <!-- Use proxy client -->
       <div class="field row">
         <label for="txt_nvruseproxy" data-i18n="settings.nvruseproxy"></label>
-        <input id="txt_nvruseproxy" type="checkbox" value="true" />
+        <input id="txt_nvruseproxy" type="checkbox" />
       </div>
 
     </fieldset>
@@ -56,7 +56,7 @@
         var txtNvrIp = document.getElementById('txt_nvrip');
         var txtUsername = document.getElementById('txt_username');
         var txtPassword = document.getElementById('txt_password');
-        var txtNvrUseProxy = (document.getElementById('txt_nvruseproxy').value === 'true' ? 'true' : 'false');
+        var txtNvrUseProxy = (document.getElementById('txt_nvruseproxy').checked ? 'true' : 'false');
         var btnApply = document.getElementById('btn_apply');
 
         function onHomeyReady(Homey) {
@@ -84,6 +84,7 @@
             }
 
             const saveSettings = () => {
+              console.log('saveSettings: ' + txtNvrUseProxy);
               Homey.api('POST', '/settings/validate', { 'hostname': txtNvrIp.value, 'useProxy': txtNvrUseProxy, 'username': txtUsername.value, 'password': txtPassword.value }, function( err, result ) {
                 if( err ) return Homey.alert(err);
                 Homey.set('ufp:nvrip', txtNvrIp.value, (error, result) => {
