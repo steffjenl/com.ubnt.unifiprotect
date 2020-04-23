@@ -101,6 +101,7 @@ class Camera extends Homey.Device {
                   }
 
                   const options = {
+                    headers: {},
                     rejectUnauthorized: false,
                   }
 
@@ -108,7 +109,7 @@ class Camera extends Homey.Device {
                     options.headers['Cookie'] = Api.getProxyCookieToken();
                   }
                   else {
-                    if (!Api.getAuthorization()) {
+                    if (Api.getAuthorization() !== '') {
                       options.headers['Authorization'] = `Bearer ${Api.getAuthorization()}`;
                     }
                   }
@@ -161,6 +162,7 @@ class Camera extends Homey.Device {
       }
 
       const options = {
+        headers: {},
         rejectUnauthorized: false,
       }
 
@@ -168,7 +170,7 @@ class Camera extends Homey.Device {
         options.headers['Cookie'] = Api.getProxyCookieToken();
       }
       else {
-        if (!Api.getAuthorization()) {
+        if (Api.getAuthorization() !== '') {
           options.headers['Authorization'] = `Bearer ${Api.getAuthorization()}`;
         }
       }
