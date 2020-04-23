@@ -100,9 +100,20 @@ class Camera extends Homey.Device {
                     throw new Error('Invalid snapshot url.');
                   }
 
-                  const agent = new https.Agent({
+                  const options = {
                     rejectUnauthorized: false,
-                  });
+                  }
+
+                  if (Api.getUseProxy()) {
+                    options.headers['Cookie'] = Api.getProxyCookieToken();
+                  }
+                  else {
+                    if (!Api.getAuthorization()) {
+                      options.headers['Authorization'] = `Bearer ${Api.getAuthorization()}`;
+                    }
+                  }
+
+                  const agent = new https.Agent(options);
 
                   // Fetch image
                   const res = await fetch(snapshotUrl, { agent });
@@ -149,9 +160,20 @@ class Camera extends Homey.Device {
         throw new Error('Invalid snapshot url.');
       }
 
-      const agent = new https.Agent({
+      const options = {
         rejectUnauthorized: false,
-      });
+      }
+
+      if (Api.getUseProxy()) {
+        options.headers['Cookie'] = Api.getProxyCookieToken();
+      }
+      else {
+        if (!Api.getAuthorization()) {
+          options.headers['Authorization'] = `Bearer ${Api.getAuthorization()}`;
+        }
+      }
+
+      const agent = new https.Agent(options);
 
       // Fetch image
       const res = await fetch(snapshotUrl, { agent });
