@@ -14,6 +14,7 @@
         "instruction": "Log in with the credentials of the UniFi Protect user.",
         "nvr": "UniFi Protect Server details",
         "nvrip": "IP address",
+        "nvrport": "Port",
         "nvruseproxy": "UnifiOs (Dream Machine Pro)",
         "credentials": "UniFi Protect user credentials",
         "username": "Username",

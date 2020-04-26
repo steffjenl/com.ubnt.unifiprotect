@@ -37,8 +37,8 @@ Adds support for Ubiquiti UniFi Protect devices in Homey.
 * A: You must select 'UnifiOs' in the Application Settings.
 
 
-* Q:
-* A:
+* Q: I am using a UnifiOs device and the snapshot url is not working
+* A: Because the UnifiOs required an Cookie, you can try https://hub.docker.com/r/silvenga/unifi-udm-api-proxy
 
 ## Feedback
 

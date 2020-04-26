@@ -43,6 +43,12 @@ class UniFiProtect extends Homey.App {
       return;
     }
 
+    // Setting NVR Port when set
+    const nvrport = Homey.ManagerSettings.get('ufp:nvrport');
+    if (nvrport) {
+      this.api.setApiPort(nvrport);
+    }
+
     // Validate NVR credentials
     const credentials = Homey.ManagerSettings.get('ufp:credentials');
     if (!credentials) {
@@ -54,6 +60,7 @@ class UniFiProtect extends Homey.App {
     const nvrUseProxy = Homey.ManagerSettings.get('ufp:useproxy');
 
     if (nvrUseProxy === 'true') {
+      this.api.setApiPort(443);
       // Log in to NVR
       this.api.loginProxy(nvrip, credentials.username, credentials.password)
         .then(() => {

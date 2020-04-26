@@ -2,125 +2,158 @@
 <html>
 
 <head>
-    <script type="text/javascript" src="/homey.js" data-origin="settings"></script>
+  <script type="text/javascript" src="/homey.js" data-origin="settings"></script>
 </head>
 
 <body>
-    <!-- Title -->
-    <h1 data-i18n="settings.title"></h1>
+<!-- Title -->
+<h1 data-i18n="settings.title"></h1>
 
-    <!-- Instruction -->
-    <p data-i18n="settings.instruction"></p>
+<!-- Instruction -->
+<p data-i18n="settings.instruction"></p>
 
-    <!-- NVR -->
-    <fieldset>
-        <legend data-i18n="settings.nvr"></legend>
+<!-- NVR -->
+<fieldset>
+  <legend data-i18n="settings.nvr"></legend>
 
-        <!-- IP address -->
-        <div class="field row">
-            <label for="txt_nvrip" data-i18n="settings.nvrip"></label>
-            <input id="txt_nvrip" type="text" value="" />
-        </div>
+  <!-- IP address -->
+  <div class="field row">
+    <label for="txt_nvrip" data-i18n="settings.nvrip"></label>
+    <input id="txt_nvrip" type="text" value=""/>
+  </div>
 
-      <!-- Use proxy client -->
-      <div class="field row">
-        <label for="txt_nvruseproxy" data-i18n="settings.nvruseproxy"></label>
-        <input id="txt_nvruseproxy" type="checkbox" />
-      </div>
+  <!-- Port -->
+  <div class="field row">
+    <label for="txt_nvrport" data-i18n="settings.nvrport"></label>
+    <input id="txt_nvrport" type="text" value="7443"/>
+  </div>
 
-    </fieldset>
+  <!-- Use proxy client -->
+  <div class="field row">
+    <label for="txt_nvruseproxy" data-i18n="settings.nvruseproxy"></label>
+    <input id="txt_nvruseproxy" type="checkbox"/>
+  </div>
 
-    <!-- Credentials -->
-    <fieldset>
-        <legend data-i18n="settings.credentials"></legend>
+</fieldset>
 
-        <!-- Username -->
-        <div class="field row">
-            <label for="txt_username" data-i18n="settings.username"></label>
-            <input id="txt_username" type="text" value="" />
-        </div>
+<!-- Credentials -->
+<fieldset>
+  <legend data-i18n="settings.credentials"></legend>
 
-        <!-- Password -->
-        <div class="field row">
-            <label for="txt_password" data-i18n="settings.password"></label>
-            <input id="txt_password" type="password" value="" />
-        </div>
-    </fieldset>
+  <!-- Username -->
+  <div class="field row">
+    <label for="txt_username" data-i18n="settings.username"></label>
+    <input id="txt_username" type="text" value=""/>
+  </div>
 
-    <!-- Apply button -->
-    <div class="field row">
-        <button id="btn_apply" class="right" data-i18n="settings.apply"></button>
-    </div>
+  <!-- Password -->
+  <div class="field row">
+    <label for="txt_password" data-i18n="settings.password"></label>
+    <input id="txt_password" type="password" value=""/>
+  </div>
+</fieldset>
 
-    <script type="text/javascript">
-      var txtNvrIp = document.getElementById('txt_nvrip');
-      var txtUsername = document.getElementById('txt_username');
-      var txtPassword = document.getElementById('txt_password');
-      var txtNvrUseProxy = (document.getElementById('txt_nvruseproxy').checked ? 'true' : 'false');        var btnApply = document.getElementById('btn_apply');
+<!-- Apply button -->
+<div class="field row">
+  <button id="btn_apply" class="right" data-i18n="settings.apply"></button>
+</div>
 
-        function onHomeyReady(Homey) {
-            const readSettings = () => {
-                Homey.get('ufp:nvrip', (error, nvrip) => {
-                    if (error) return Homey.alert(error);
+<script type="text/javascript">
+  var txtNvrIp = document.getElementById('txt_nvrip');
+  var txtNvrPort = document.getElementById('txt_nvrport');
+  var txtUsername = document.getElementById('txt_username');
+  var txtPassword = document.getElementById('txt_password');
+  var txtNvrUseProxy = document.getElementById('txt_nvruseproxy');
+  var btnApply = document.getElementById('btn_apply');
 
-                    if (nvrip) {
-                        txtNvrIp.value = nvrip;
-                    } else {
-                        console.warn('[SETTINGS] Could not read UniFi Cloud Key IP address.');
-                    }
-                });
+  function onHomeyReady(Homey) {
+    const readSettings = () => {
+      Homey.get('ufp:nvrip', (error, nvrip) => {
+        if (error) return Homey.alert(error);
 
-                Homey.get('ufp:credentials', (error, credentials) => {
-                    if (error) return Homey.alert(error);
-
-                    if (credentials) {
-                        txtUsername.value = credentials.username;
-                        txtPassword.value = credentials.password;
-                    } else {
-                        console.warn('[SETTINGS] Could not read credentials.');
-                    }
-                });
-            }
-
-            const saveSettings = () => {
-              txtNvrIp = document.getElementById('txt_nvrip');
-              txtUsername = document.getElementById('txt_username');
-              txtPassword = document.getElementById('txt_password');
-              txtNvrUseProxy = (document.getElementById('txt_nvruseproxy').checked ? 'true' : 'false');
-
-              Homey.api('POST', '/settings/validate', { 'hostname': txtNvrIp.value, 'useProxy': txtNvrUseProxy, 'username': txtUsername.value, 'password': txtPassword.value }, function( err, result ) {
-                if( err ) return Homey.alert(err);
-                Homey.set('ufp:nvrip', txtNvrIp.value, (error, result) => {
-                  if (error) return Homey.alert(error);
-                  console.log('[SETTINGS] UniFi Cloud Key IP address saved.');
-                });
-
-                Homey.set('ufp:useproxy', txtNvrUseProxy, (error, result) => {
-                  if (error) return Homey.alert(error);
-                  console.log('[SETTINGS] UniFi Cloud Key Use Proxy Key saved.');
-                });
-
-                const credentials = {
-                  'username': txtUsername.value,
-                  'password': txtPassword.value
-                };
-
-                Homey.set('ufp:credentials', credentials, (error, result) => {
-                  if (error) return Homey.alert(error);
-                  console.log('[SETTINGS] credentials saved.');
-                });
-                Homey.alert(Homey.__('settings.saved'), 'info');
-              });
-            }
-
-            btnApply.addEventListener('click', e => {
-                saveSettings();
-            });
-
-            readSettings();
-            Homey.ready();
+        if (nvrip) {
+          txtNvrIp.value = nvrip;
+        } else {
+          console.warn('[SETTINGS] Could not read UniFi Cloud Key IP address.');
         }
-    </script>
+      });
+
+      Homey.get('ufp:nvrport', (error, nvrPort) => {
+        if (error) return Homey.alert(error);
+
+        if (nvrPort) {
+          txtNvrPort.value = nvrPort;
+        } else {
+          console.warn('[SETTINGS] Could not read UniFi Cloud Key IP address.');
+        }
+      });
+
+      Homey.get('ufp:useproxy', (error, useproxy) => {
+        if (error) return Homey.alert(error);
+
+        if (useproxy) {
+          txtNvrUseProxy.checked = (useproxy === 'true');
+        } else {
+          console.warn('[SETTINGS] Could not read UniFi Cloud Key Use Proxy.');
+        }
+      });
+
+      Homey.get('ufp:credentials', (error, credentials) => {
+        if (error) return Homey.alert(error);
+
+        if (credentials) {
+          txtUsername.value = credentials.username;
+          txtPassword.value = credentials.password;
+        } else {
+          console.warn('[SETTINGS] Could not read credentials.');
+        }
+      });
+    };
+
+    const saveSettings = () => {
+      Homey.api('POST', '/settings/validate', {
+        'hostname': txtNvrIp.value,
+        'useProxy': txtNvrUseProxy,
+        'username': txtUsername.value,
+        'password': txtPassword.value
+      }, function (err, result) {
+        if (err) return Homey.alert(err);
+        Homey.set('ufp:nvrip', txtNvrIp.value, (error, result) => {
+          if (error) return Homey.alert(error);
+          console.log('[SETTINGS] UniFi Cloud Key IP address saved.');
+        });
+
+        Homey.set('ufp:nvrport', txtNvrPort.value, (error, result) => {
+          if (error) return Homey.alert(error);
+          console.log('[SETTINGS] UniFi Cloud Key Port saved.');
+        });
+
+        Homey.set('ufp:useproxy', (txtNvrUseProxy.checked ? 'true' : 'false'), (error, result) => {
+          if (error) return Homey.alert(error);
+          console.log('[SETTINGS] UniFi Cloud Key Use Proxy Key saved.');
+        });
+
+        const credentials = {
+          'username': txtUsername.value,
+          'password': txtPassword.value
+        };
+
+        Homey.set('ufp:credentials', credentials, (error, result) => {
+          if (error) return Homey.alert(error);
+          console.log('[SETTINGS] credentials saved.');
+        });
+        Homey.alert(Homey.__('settings.saved'), 'info');
+      });
+    };
+
+    btnApply.addEventListener('click', e => {
+      saveSettings();
+    });
+
+    readSettings();
+    Homey.ready();
+  }
+</script>
 </body>
 
 </html>
