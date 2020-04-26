@@ -14,7 +14,7 @@
         "instruction": "Log in met de gegevens van de UniFi Protect-gebruiker.",
         "nvr": "Gegevens van UniFi Cloud Key",
         "nvrip": "IP-adres",
-      "nvruseproxy": "Gebruik proxy (o.a. Dream Machine Pro)",
+        "nvruseproxy": "UnifiOs (o.a. Dream Machine Pro)",
         "credentials": "UniFi Protect gebruikersgegevens",
         "username": "Gebruikersnaam",
         "password": "Wachtwoord",
