@@ -113,7 +113,7 @@
     const saveSettings = () => {
       Homey.api('POST', '/settings/validate', {
         'hostname': txtNvrIp.value,
-        'useProxy': txtNvrUseProxy,
+        'useProxy': (txtNvrUseProxy.checked ? 'true' : 'false'),
         'username': txtUsername.value,
         'password': txtPassword.value
       }, function (err, result) {
@@ -145,6 +145,20 @@
         Homey.alert(Homey.__('settings.saved'), 'info');
       });
     };
+
+    const changePort = () => {
+      if (txtNvrUseProxy.checked)
+      {
+        txtNvrPort.value = 443;
+      }
+      else {
+        txtNvrPort.value = 7443;
+      }
+    }
+
+    txtNvrUseProxy.addEventListener('change', e => {
+      changePort();
+    });
 
     btnApply.addEventListener('click', e => {
       saveSettings();
