@@ -22,8 +22,10 @@ Adds support for Ubiquiti UniFi Protect devices in Homey.
 
 1. Create a local access user in the UniFi Protect web interface (used only for Homey.
 2. Install this UniFi Protect app on your Homey.
-4. Start the 'add device wizard' in Homey, search for your UniFi Cloud Key and/or cameras and add them to your devices. You will be prompted to enter the credentials of the UniFi Video user you created in step 2.
-5. If the user credentials changed in UniFi Protect, they can be updated on the UniFi Protect app's settings page.
+3. Go to the UniFi Protect app's settings page.
+4. You will be prompted to enter the credentials of the UniFi Video user you created in step 2 and some network information.
+5. Start the 'add device wizard' in Homey, search for your UniFi Cloud Key and/or cameras and add them to your devices.
+6. If the user credentials changed in UniFi Protect, they can be updated on the UniFi Protect app's settings page.
 
 ## Usage
 
