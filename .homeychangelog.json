@@ -16,5 +16,8 @@
   },
   "1.0.6": {
     "en": "Support for UnifiOS devices"
+  },
+  "1.0.7": {
+    "en": "#1 bug fix: controller not found when pairing with controller"
   }
 }
