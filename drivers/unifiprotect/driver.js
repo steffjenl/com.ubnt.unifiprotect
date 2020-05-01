@@ -9,13 +9,6 @@ class NvrDriver extends Homey.Driver {
     this.device = null;
 
     this.log('NVR driver initialized.');
-
-    await this.api.getServer().then(serverInfo => {
-      this.device = {
-        name: serverInfo.name,
-        data: { id: String(serverInfo.id) },
-      };
-    });
   }
 
   onPair(socket) {
@@ -23,20 +16,19 @@ class NvrDriver extends Homey.Driver {
     // Validate NVR IP address
     socket.on('validate', (data, callback) => {
       const nvrip = Homey.ManagerSettings.get('ufp:nvrip');
+
+      if (nvrip) {
+        this.api.getServer()
+          .then(serverInfo => {
+            this.device = {
+              name: serverInfo.name,
+              data: { id: String(serverInfo.id) },
+            };
+          });
+      }
+
       callback(null, nvrip ? 'ok' : 'nok');
     });
-
-    // // Create device from NVR server properties
-    // const createDevice = async credentials => {
-    //   await this.api.getServer().then(serverInfo => {
-    //     this.device = {
-    //       name: serverInfo.name,
-    //       data: { id: String(serverInfo.id) },
-    //     };
-    //     socket.showView('list_devices');
-    //     }
-    //   );
-    // };
 
     // Perform when view is changed
     socket.on('showView', (viewId, callback) => {
@@ -47,17 +39,6 @@ class NvrDriver extends Homey.Driver {
       }
       callback();
     });
-
-    // // Perform when user enters credentials in login screen
-    // socket.on('credentials', async (credentials, callback) => {
-    //   this.log('onCredentials');
-    //
-    //   // Store credentials in settings
-    //   Homey.ManagerSettings.set('ufp:credentials', credentials);
-    //   callback();
-    //
-    //   createDevice(credentials);
-    // });
 
     // Perform when device list is shown
     socket.on('list_devices', (data, callback) => {
@@ -76,9 +57,6 @@ class NvrDriver extends Homey.Driver {
         socket.showView('login');
       }
     });
-
-    // Discover NVR
-    // this.api.discover();
   }
 
   async onServer(server) {
