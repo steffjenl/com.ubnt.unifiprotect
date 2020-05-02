@@ -13,6 +13,7 @@ Adds support for Ubiquiti UniFi Protect devices in Homey.
 	* UVC-G3-AF
 	* UVC-G3-DOME
 	* UVC-G3-FLEX
+	* UVC-G3-MICRO
 	* UVC-G3-PRO
 * UniFi® Video Camera G4 series:
 	* UVC-G4-PRO
