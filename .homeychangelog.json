@@ -19,5 +19,8 @@
   },
   "1.0.7": {
     "en": "#1 bug fix: controller not found when pairing with controller"
+  },
+  "1.0.8": {
+    "en": "Bug # 2 and # 3 have been resolved. It is now again possible to add a UnifiOS Protect controller and an easier solution for the snapshot url so that PiPup can be used."
   }
 }
