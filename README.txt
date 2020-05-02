@@ -39,4 +39,16 @@ Troubleshooting / FAQ:
 - A: You must select 'UnifiOs' in the Application Settings.
 
 - Q: I am using a UnifiOs device and the snapshot url is not working
-- A: Because the UnifiOs required an Cookie, you can try https://hub.docker.com/r/silvenga/unifi-udm-api-proxy
+- A: Enable 'Enable Anonymous Snapshot' on your camera GUI.
+  -- Go to the Unifi Protect settings.
+  -- Get the 'Device Password' by clicking on reveal.
+  -- Go to the gui of the camera itself. http://ipaddressfromcamera/ (ip address can be found on the camera list page)
+  -- Login with username ubnt and the password from the settings page.
+  -- Enable 'Enable Anonymous Snapshot'
+  -- Click Save Changes
+
+- Q: I get a lot of false motion alerts. Is there anything to do about that?
+- A: Turn off 'Enable Auto Rotate' and rotate the camera manually.
+- A: Remove the default motion zone and create a motion zone with only the zone what you want to detect motions.
+- A: Set 'Minimum seconds of motion to trigger event' on 1 second or higher
+- Do you have more tips? let me know!

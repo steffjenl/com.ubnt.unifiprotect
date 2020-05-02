@@ -126,6 +126,20 @@ class Camera extends Homey.Device {
                   .then(() => {
                     Homey.app.snapshotToken.setValue(SnapshotImage);
 
+                    if (Api.getUseProxy()) {
+                      // when using UnifiOS you must have an cookie to get the snapshot, workaround is to get the snapshot directly from the camera.
+                      let hostAddress = null;
+                      this.findCameraById(camera.id)
+                        .then(cameraInfo => {
+                          hostAddress = cameraInfo.host;
+                          if (!hostAddress) {
+                            this.error('no host ip address found!');
+                          }
+                          snapshotUrl = `http://${hostAddress}/snap.jpeg`;
+                        })
+                        .catch(error => this.error(new Error(`Error getting getSnapShotUrl: ${error}`)));
+                    }
+
                     this.log('------ _onSnapshotBuffer ------');
                     this.log(`- Camera name: ${this.getName()}`);
                     this.log(`- Snapshot url: ${snapshotUrl}`);
