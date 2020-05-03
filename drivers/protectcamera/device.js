@@ -10,6 +10,7 @@ class Camera extends Homey.Device {
   async onInit() {
     // this.camera = await this.getDriver().getCamera(this.getData().id).catch(this.error.bind(this, 'Could not get camera.'));
     this.camera = this.getData();
+    this.ipAddress = null;
 
     // Snapshot trigger
     this._snapshotTrigger = new Homey.FlowCardTrigger(UfvConstants.EVENT_SNAPSHOT_CREATED);
@@ -37,7 +38,8 @@ class Camera extends Homey.Device {
       });
 
     this.registerCapabilityListener('camera_microphone_volume', async (value) => {
-      Api.setMicVolume(this.camera, value).catch(this.error);
+      Api.setMicVolume(this.camera, value)
+        .catch(this.error);
     });
 
     await this._createSnapshotImage();
@@ -89,78 +91,69 @@ class Camera extends Homey.Device {
       const snapshotUrl = null;
       const streamUrl = null;
 
-      Api.getBootstrapInfo().then(bootstrap => {
-        Api.getSnapShotUrl(camera, width)
-          .then(snapshotUrl => {
-            Api.getStreamUrl(camera)
-              .then(streamUrl => {
-                const SnapshotImage = new Homey.Image();
-                SnapshotImage.setStream(async stream => {
-                  if (!snapshotUrl) {
-                    throw new Error('Invalid snapshot url.');
-                  }
+      Api.createSnapshotUrl(camera, width)
+        .then(snapshotUrl => {
+          Api.getStreamUrl(camera)
+            .then(streamUrl => {
+              const SnapshotImage = new Homey.Image();
+              SnapshotImage.setStream(async stream => {
+                if (!snapshotUrl) {
+                  throw new Error('Invalid snapshot url.');
+                }
 
-                  const options = {
-                    headers: {},
-                    rejectUnauthorized: false,
+                const options = {
+                  headers: {},
+                  rejectUnauthorized: false,
+                };
+
+                if (Api.getUseProxy()) {
+                  options.headers['Cookie'] = Api.getProxyCookieToken();
+                } else {
+                  if (Api.getAuthorization() !== '') {
+                    options.headers['Authorization'] = `Bearer ${Api.getAuthorization()}`;
                   }
+                }
+
+                const agent = new https.Agent(options);
+
+                // Fetch image
+                const res = await fetch(snapshotUrl, { agent });
+                if (!res.ok) throw new Error('Could not fetch snapshot image.');
+
+                return res.body.pipe(stream);
+              });
+              SnapshotImage.register()
+                .then(() => {
+                  Homey.app.snapshotToken.setValue(SnapshotImage);
 
                   if (Api.getUseProxy()) {
-                    options.headers['Cookie'] = Api.getProxyCookieToken();
-                  }
-                  else {
-                    if (Api.getAuthorization() !== '') {
-                      options.headers['Authorization'] = `Bearer ${Api.getAuthorization()}`;
-                    }
+                    // when using UnifiOS you must have an cookie to get the snapshot, workaround is to get the snapshot directly from the camera.
+                    snapshotUrl = `http://${this.ipAddress}/snap.jpeg`;
                   }
 
-                  const agent = new https.Agent(options);
+                  this.log('------ _onSnapshotBuffer ------');
+                  this.log(`- Camera name: ${this.getName()}`);
+                  this.log(`- Snapshot url: ${snapshotUrl}`);
+                  this.log(`- Stream url: ${streamUrl}`);
+                  this.log('-------------------------------');
 
-                  // Fetch image
-                  const res = await fetch(snapshotUrl, { agent });
-                  if (!res.ok) throw new Error('Could not fetch snapshot image.');
-
-                  return res.body.pipe(stream);
-                });
-                SnapshotImage.register()
-                  .then(() => {
-                    Homey.app.snapshotToken.setValue(SnapshotImage);
-
-                    if (Api.getUseProxy()) {
-                      // when using UnifiOS you must have an cookie to get the snapshot, workaround is to get the snapshot directly from the camera.
-                      let hostAddress = null;
-                      this.findCameraById(camera.id)
-                        .then(cameraInfo => {
-                          hostAddress = cameraInfo.host;
-                          if (!hostAddress) {
-                            this.error('no host ip address found!');
-                          }
-                          snapshotUrl = `http://${hostAddress}/snap.jpeg`;
-                        })
-                        .catch(error => this.error(new Error(`Error getting getSnapShotUrl: ${error}`)));
-                    }
-
-                    this.log('------ _onSnapshotBuffer ------');
-                    this.log(`- Camera name: ${this.getName()}`);
-                    this.log(`- Snapshot url: ${snapshotUrl}`);
-                    this.log(`- Stream url: ${streamUrl}`);
-                    this.log('-------------------------------');
-
-                    this._snapshotTrigger.trigger({
-                      ufv_snapshot_token: SnapshotImage,
-                      ufv_snapshot_camera: this.getName(),
-                      ufv_snapshot_snapshot_url: snapshotUrl,
-                      ufv_snapshot_stream_url: streamUrl,
-                    });
-                  }).catch(error => reject(error));
-              }).catch(error => reject(error));
-          }).catch(error => reject(error));
-      }).catch(error => reject(error));
+                  this._snapshotTrigger.trigger({
+                    ufv_snapshot_token: SnapshotImage,
+                    ufv_snapshot_camera: this.getName(),
+                    ufv_snapshot_snapshot_url: snapshotUrl,
+                    ufv_snapshot_stream_url: streamUrl,
+                  });
+                })
+                .catch(error => reject(error));
+            })
+            .catch(error => reject(error));
+        })
+        .catch(error => reject(error));
     });
   }
 
   async _createSnapshotImage() {
-    this.log('Creating snapshot image.');
+    this.log('Creating snapshot image for camera ' + this.getName() + '.');
 
     this._snapshotImage = new Homey.Image();
     this._snapshotImage.setStream(async stream => {
@@ -168,19 +161,20 @@ class Camera extends Homey.Device {
       let snapshotUrl = null;
 
       await Api.createSnapshotUrl(this.camera)
-        .then(url => { snapshotUrl = url; })
+        .then(url => {
+          snapshotUrl = url;
+        })
         .catch(this.error.bind(this, 'Could not create snapshot URL.'));
 
       if (!snapshotUrl) {
         throw new Error('Invalid snapshot url.');
       }
 
-      const headers = {}
+      const headers = {};
 
       if (Api.getUseProxy()) {
         headers['Cookie'] = Api.getProxyCookieToken();
-      }
-      else {
+      } else {
         if (Api.getAuthorization() !== '') {
           headers['Authorization'] = `Bearer ${Api.getAuthorization()}`;
         }
@@ -191,7 +185,10 @@ class Camera extends Homey.Device {
       });
 
       // Fetch image
-      const res = await fetch(snapshotUrl, { agent, headers });
+      const res = await fetch(snapshotUrl, {
+        agent,
+        headers
+      });
       if (!res.ok) throw new Error('Could not fetch snapshot image.');
 
       return res.body.pipe(stream);
@@ -202,7 +199,7 @@ class Camera extends Homey.Device {
       .then(() => this.setCameraImage('snapshot', 'Snapshot', this._snapshotImage))
       .catch(this.error);
 
-    this.log('Created snapshot image.');
+    this.log('Created snapshot image for camera ' + this.getName() + '.');
   }
 
   onMotionStart() {
@@ -219,7 +216,8 @@ class Camera extends Homey.Device {
   onCamera(status) {
     this.log('onCamera');
     this.setCapabilityValue('camera_recording_status',
-      Homey.__(`events.camera.${String(status.recordingIndicator).toLowerCase()}`));
+      Homey.__(`events.camera.${String(status.recordingIndicator)
+        .toLowerCase()}`));
   }
 
   onMotionDetected(start, end, motionThumbnail, motionHeatmap, motionScore) {
@@ -227,7 +225,8 @@ class Camera extends Homey.Device {
 
     if (!lastMotionAt) {
       this.log(`set last_motion_at to last datetime: ${this.getData().id}`);
-      if (this.hasCapability('last_motion_at')) this.setCapabilityValue('last_motion_at', start).catch(this.error);
+      if (this.hasCapability('last_motion_at')) this.setCapabilityValue('last_motion_at', start)
+        .catch(this.error);
       return;
     }
 
@@ -236,31 +235,43 @@ class Camera extends Homey.Device {
       const lastMotion = new Date(start);
       this.log(`new motion detected on camera: ${this.getData().id} on ${lastMotion.toLocaleString()}`);
 
-      this.setCapabilityValue('last_motion_at', start).catch(this.error);
-      if (this.hasCapability('last_motion_score') && Number(motionScore) > 0) this.setCapabilityValue('last_motion_score', Number(motionScore)).catch(this.error);
-      if (this.hasCapability('last_motion_thumbnail')) this.setCapabilityValue('last_motion_thumbnail', motionThumbnail).catch(this.error);
-      if (this.hasCapability('last_motion_heatmap')) this.setCapabilityValue('last_motion_heatmap', motionHeatmap).catch(this.error);
-      if (this.hasCapability('last_motion_date')) this.setCapabilityValue('last_motion_date', lastMotion.toLocaleDateString()).catch(this.error);
-      if (this.hasCapability('last_motion_time')) this.setCapabilityValue('last_motion_time', lastMotion.toLocaleTimeString()).catch(this.error);
+      this.setCapabilityValue('last_motion_at', start)
+        .catch(this.error);
+      if (this.hasCapability('last_motion_score') && Number(motionScore) > 0) this.setCapabilityValue('last_motion_score', Number(motionScore))
+        .catch(this.error);
+      if (this.hasCapability('last_motion_thumbnail')) this.setCapabilityValue('last_motion_thumbnail', motionThumbnail)
+        .catch(this.error);
+      if (this.hasCapability('last_motion_heatmap')) this.setCapabilityValue('last_motion_heatmap', motionHeatmap)
+        .catch(this.error);
+      if (this.hasCapability('last_motion_date')) this.setCapabilityValue('last_motion_date', lastMotion.toLocaleDateString())
+        .catch(this.error);
+      if (this.hasCapability('last_motion_time')) this.setCapabilityValue('last_motion_time', lastMotion.toLocaleTimeString())
+        .catch(this.error);
       this.onMotionStart();
       Api.setLastMotionAt(start);
     } else if (end > lastMotionAt) {
       const lastMotion = new Date(end);
       this.log(`motion detected ended on camera: ${this.getData().id} on ${lastMotion.toLocaleString()}`);
       this.onMotionEnd();
-      this.setCapabilityValue('last_motion_at', end).catch(this.error);
-      if (this.hasCapability('last_motion_score') && Number(motionScore) > 0) this.setCapabilityValue('last_motion_score', Number(motionScore)).catch(this.error);
+      this.setCapabilityValue('last_motion_at', end)
+        .catch(this.error);
+      if (this.hasCapability('last_motion_score') && Number(motionScore) > 0) this.setCapabilityValue('last_motion_score', Number(motionScore))
+        .catch(this.error);
       Api.setLastMotionAt(end);
     }
   }
 
   onRefreshCamera(cameraData) {
+    if (cameraData.host) {
+      this.ipAddress = cameraData.host;
+    }
     if (this.hasCapability('camera_recording_status')) {
       this.setCapabilityValue('camera_recording_status', cameraData.isRecording);
     }
     if (this.hasCapability('camera_recording_mode')) {
       this.setCapabilityValue('camera_recording_mode',
-        Homey.__(`events.camera.${String(cameraData.recordingSettings.mode).toLowerCase()}`));
+        Homey.__(`events.camera.${String(cameraData.recordingSettings.mode)
+          .toLowerCase()}`));
     }
     if (this.hasCapability('camera_microphone_status')) {
       this.setCapabilityValue('camera_microphone_status', cameraData.isMicEnabled);

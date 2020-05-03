@@ -71,8 +71,6 @@ class CameraDriver extends Homey.Driver {
 
     if (Object.prototype.hasOwnProperty.call(device, '_events')) {
       device.onMotionDetected(motionStart, motionEnd, motionThumbnail, motionHeatmap, motionScore);
-    } else {
-      this.log(`Unknown device: ${camera}`);
     }
   }
 
@@ -83,8 +81,6 @@ class CameraDriver extends Homey.Driver {
 
     if (Object.prototype.hasOwnProperty.call(device, '_events')) {
       device.onRefreshCamera(cameraData);
-    } else {
-      this.log(`Unknown device: ${cameraData.id}`);
     }
   }
 }
