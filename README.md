@@ -1,4 +1,4 @@
-# UniFi Video
+# UniFi Protect
 
 Adds support for Ubiquiti UniFi Protect devices in Homey.
 
