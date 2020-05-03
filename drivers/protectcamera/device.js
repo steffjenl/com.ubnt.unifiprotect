@@ -131,11 +131,11 @@ class Camera extends Homey.Device {
                     snapshotUrl = `http://${this.ipAddress}/snap.jpeg`;
                   }
 
-                  this.log('------ _onSnapshotBuffer ------');
-                  this.log(`- Camera name: ${this.getName()}`);
-                  this.log(`- Snapshot url: ${snapshotUrl}`);
-                  this.log(`- Stream url: ${streamUrl}`);
-                  this.log('-------------------------------');
+//                  this.log('------ _onSnapshotBuffer ------');
+//                  this.log(`- Camera name: ${this.getName()}`);
+//                  this.log(`- Snapshot url: ${snapshotUrl}`);
+//                  this.log(`- Stream url: ${streamUrl}`);
+//                  this.log('-------------------------------');
 
                   this._snapshotTrigger.trigger({
                     ufv_snapshot_token: SnapshotImage,

@@ -22,5 +22,8 @@
   },
   "1.0.8": {
     "en": "Bug # 2 and # 3 have been resolved. It is now again possible to add a UnifiOS Protect controller and an easier solution for the snapshot url so that PiPup can be used."
+  },
+  "1.0.9": {
+    "en": "Removed some events, make code cleaner, fix snapshot url bug"
   }
 }

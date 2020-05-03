@@ -1,6 +1,6 @@
 {
   "name": "com.ubnt.unifiprotect",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Adds support for UniFi Protect devices.",
   "main": "app.js",
   "directories": {
@@ -23,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/j0bro/com.ubnt.unifivideo.git"
+    "url": "git+https://github.com/steffjenl/com.ubnt.unifiprotect.git"
   },
   "keywords": [
     "unifi",
@@ -36,7 +36,7 @@
   "author": "Stèphan Eizinga",
   "license": "ISC",
   "bugs": {
-    "url": "ttps://github.com/steffjenl/com.ubnt.unifiprotect/issues"
+    "url": "https://github.com/steffjenl/com.ubnt.unifiprotect/issues"
   },
   "homepage": "https://github.com/steffjenl/com.ubnt.unifiprotect#readme"
 }
