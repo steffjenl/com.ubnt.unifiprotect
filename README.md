@@ -53,6 +53,9 @@ Adds support for Ubiquiti UniFi Protect devices in Homey.
     * A: Set 'Minimum seconds of motion to trigger event' on 1 second or higher
     * Do you have more tips? let me know!
 
+* Question: I am using a UnifiOS device, I don't see any storage information.
+    * A: UnifiOS device does not release storage information through the API.
+
 
 ## Feedback
 

@@ -52,3 +52,6 @@ Troubleshooting / FAQ:
 - A: Remove the default motion zone and create a motion zone with only the zone what you want to detect motions.
 - A: Set 'Minimum seconds of motion to trigger event' on 1 second or higher
 - Do you have more tips? let me know!
+
+- Q: I am using a UnifiOS device, I don't see any storage information.
+- A: UnifiOS device does not release storage information through the API.
