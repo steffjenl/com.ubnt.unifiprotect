@@ -25,5 +25,8 @@
   },
   "1.0.9": {
     "en": "Removed some events, make code cleaner, fix snapshot url bug"
+  },
+  "1.0.10": {
+    "en": "Snapshot url is now Homey Public cloud url and fixed memory leak"
   }
 }

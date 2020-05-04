@@ -111,7 +111,8 @@ class Camera extends Homey.Device {
                 }
 
                 const agent = new https.Agent({
-                  rejectUnauthorized: false
+                  rejectUnauthorized: false,
+                  keepAlive: false,
                 });
 
                 // Fetch image
@@ -177,7 +178,8 @@ class Camera extends Homey.Device {
       }
 
       const agent = new https.Agent({
-        rejectUnauthorized: false
+        rejectUnauthorized: false,
+        keepAlive: false,
       });
 
       // Fetch image
