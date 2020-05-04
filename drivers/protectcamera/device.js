@@ -10,7 +10,6 @@ class Camera extends Homey.Device {
   async onInit() {
     // this.camera = await this.getDriver().getCamera(this.getData().id).catch(this.error.bind(this, 'Could not get camera.'));
     this.camera = this.getData();
-    this.ipAddress = null;
 
     // Snapshot trigger
     this._snapshotTrigger = new Homey.FlowCardTrigger(UfvConstants.EVENT_SNAPSHOT_CREATED);
@@ -126,21 +125,16 @@ class Camera extends Homey.Device {
                 .then(() => {
                   Homey.app.snapshotToken.setValue(SnapshotImage);
 
-                  if (Api.getUseProxy()) {
-                    // when using UnifiOS you must have an cookie to get the snapshot, workaround is to get the snapshot directly from the camera.
-                    snapshotUrl = `http://${this.ipAddress}/snap.jpeg`;
-                  }
-
 //                  this.log('------ _onSnapshotBuffer ------');
 //                  this.log(`- Camera name: ${this.getName()}`);
-//                  this.log(`- Snapshot url: ${snapshotUrl}`);
+//                  this.log(`- Snapshot url: ${SnapshotImage.cloudUrl}`);
 //                  this.log(`- Stream url: ${streamUrl}`);
 //                  this.log('-------------------------------');
 
                   this._snapshotTrigger.trigger({
                     ufv_snapshot_token: SnapshotImage,
                     ufv_snapshot_camera: this.getName(),
-                    ufv_snapshot_snapshot_url: snapshotUrl,
+                    ufv_snapshot_snapshot_url: SnapshotImage.cloudUrl,
                     ufv_snapshot_stream_url: streamUrl,
                   });
                 })
@@ -262,9 +256,6 @@ class Camera extends Homey.Device {
   }
 
   onRefreshCamera(cameraData) {
-    if (cameraData.host) {
-      this.ipAddress = cameraData.host;
-    }
     if (this.hasCapability('camera_recording_status')) {
       this.setCapabilityValue('camera_recording_status', cameraData.isRecording);
     }

@@ -5,6 +5,13 @@ const UfvConstants = require('./lib/ufvconstants');
 
 class UniFiProtect extends Homey.App {
   async onInit() {
+    this.loggedIn = false;
+    this.useProxy = false;
+
+    this.nvrIp = false;
+    this.nvrUsername = false;
+    this.nvrPassword = false;
+
     // Register snapshot image token
     this.snapshotToken = new Homey.FlowToken('ufv_snapshot', {
       type: 'image',
@@ -22,6 +29,10 @@ class UniFiProtect extends Homey.App {
       }
     });
     this._login();
+
+    this._checkMotion();
+    this._refreshCapabilities();
+    this._refreshCookie();
 
     this.log('UniFi Protect is running.');
   }
@@ -60,11 +71,12 @@ class UniFiProtect extends Homey.App {
           this.api.getBootstrapInfo()
             .then(() => {
               this.log('Bootstrap loaded.');
-              this._checkMotion();
-              this._motionLoop();
-              this._refreshCapabilities();
-              this._refreshCapabilitiesLoop();
-              this._refreshCookieLoop();
+              this.loggedIn = true;
+              this.useProxy = true;
+
+              this.nvrIp = nvrip;
+              this.nvrUsername = credentials.username;
+              this.nvrPassword = credentials.password;
             })
             .catch(error => this.error(error));
           this.log('Logged in.');
@@ -78,10 +90,7 @@ class UniFiProtect extends Homey.App {
           this.api.getBootstrapInfo()
             .then(() => {
               this.log('Bootstrap loaded.');
-              this._checkMotion();
-              this._motionLoop();
-              this._refreshCapabilities();
-              this._refreshCapabilitiesLoop();
+              this.loggedIn = true;
             })
             .catch(error => this.error(error));
           this.log('Logged in.');
@@ -91,42 +100,55 @@ class UniFiProtect extends Homey.App {
   }
 
   _checkMotion() {
-    // Get Last Motion
-    this.api.getMotionEvents()
-      .then(motions => {
-        motions.forEach(motion => {
-          Homey.ManagerDrivers.getDriver('protectcamera').onParseTriggerMotionData(motion.camera, motion.start, motion.end, motion.thumbnail, motion.heatmap, motion.score);
-        });
-      })
-      .catch(error => this.error(error));
-  }
-
-  _motionLoop() {
-    setInterval(() => {
-      this._checkMotion();
-    }, 1000);
+    if (this.loggedIn) {
+      // Get Last Motion
+      this.api.getMotionEvents()
+        .then(motions => {
+          motions.forEach(motion => {
+            Homey.ManagerDrivers.getDriver('protectcamera')
+              .onParseTriggerMotionData(motion.camera, motion.start, motion.end, motion.thumbnail, motion.heatmap, motion.score);
+          });
+        })
+        .catch(error => this.error(error));
+      // _checkMotion after 1 second
+      setTimeout(() => {
+        this._checkMotion();
+      }, 1000);
+    }
   }
 
   _refreshCapabilities() {
-    this.api.getCameras()
-      .then(cameras => {
-        cameras.forEach(camera => {
-          Homey.ManagerDrivers.getDriver('protectcamera').onParseTriggerCameraData(camera);
-        });
-      })
-      .catch(error => this.error(error));
+    if (this.loggedIn) {
+      this.api.getCameras()
+        .then(cameras => {
+          cameras.forEach(camera => {
+            Homey.ManagerDrivers.getDriver('protectcamera')
+              .onParseTriggerCameraData(camera);
+          });
+        })
+        .catch(error => this.error(error));
+
+      // _refreshCapabilities after 5 second
+      setTimeout(() => {
+        this._refreshCapabilities();
+      }, 5000);
+    }
   }
 
-  _refreshCapabilitiesLoop() {
-    setInterval(() => {
-      this._checkMotion();
-    }, 5000);
-  }
+  _refreshCookie() {
+    if (this.loggedIn && this.useProxy) {
 
-  _refreshCookieLoop() {
-    setInterval(() => {
-      this._login();
-    }, 2700000);
+      this.api.loginProxy(this.nvrIp, this.nvrUsername, this.nvrPassword)
+        .then(() => {
+          this.log('Logged in again to refresh cookie.');
+        })
+        .catch(error => this.error(error));
+
+      // _refreshCookie after 6 hours
+      setTimeout(() => {
+        this._refreshCookie();
+      }, 2700000);
+    }
   }
 }
 
