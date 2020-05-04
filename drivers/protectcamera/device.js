@@ -100,23 +100,25 @@ class Camera extends Homey.Device {
                   throw new Error('Invalid snapshot url.');
                 }
 
-                const options = {
-                  headers: {},
-                  rejectUnauthorized: false,
-                };
+                const headers = {};
 
                 if (Api.getUseProxy()) {
-                  options.headers['Cookie'] = Api.getProxyCookieToken();
+                  headers['Cookie'] = Api.getProxyCookieToken();
                 } else {
                   if (Api.getAuthorization() !== '') {
-                    options.headers['Authorization'] = `Bearer ${Api.getAuthorization()}`;
+                    headers['Authorization'] = `Bearer ${Api.getAuthorization()}`;
                   }
                 }
 
-                const agent = new https.Agent(options);
+                const agent = new https.Agent({
+                  rejectUnauthorized: false
+                });
 
                 // Fetch image
-                const res = await fetch(snapshotUrl, { agent });
+                const res = await fetch(snapshotUrl, {
+                  agent,
+                  headers
+                });
                 if (!res.ok) throw new Error('Could not fetch snapshot image.');
 
                 return res.body.pipe(stream);
