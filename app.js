@@ -110,11 +110,11 @@ class UniFiProtect extends Homey.App {
           });
         })
         .catch(error => this.error(error));
-      // _checkMotion after 1 second
-      setTimeout(() => {
-        this._checkMotion();
-      }, 1000);
     }
+    // _checkMotion after 1 second
+    setTimeout(() => {
+      this._checkMotion();
+    }, 1000);
   }
 
   _refreshCapabilities() {
@@ -127,12 +127,11 @@ class UniFiProtect extends Homey.App {
           });
         })
         .catch(error => this.error(error));
-
-      // _refreshCapabilities after 5 second
-      setTimeout(() => {
-        this._refreshCapabilities();
-      }, 5000);
     }
+    // _refreshCapabilities after 5 second
+    setTimeout(() => {
+      this._refreshCapabilities();
+    }, 5000);
   }
 
   _refreshCookie() {
@@ -143,12 +142,11 @@ class UniFiProtect extends Homey.App {
           this.log('Logged in again to refresh cookie.');
         })
         .catch(error => this.error(error));
-
-      // _refreshCookie after 6 hours
-      setTimeout(() => {
-        this._refreshCookie();
-      }, 2700000);
     }
+    // _refreshCookie after 6 hours
+    setTimeout(() => {
+      this._refreshCookie();
+    }, 2700000);
   }
 }
 
