@@ -32,7 +32,6 @@ class UniFiProtect extends Homey.App {
 
     this._checkMotion();
     this._refreshCapabilities();
-    this._refreshCookie();
 
     this.log('UniFi Protect is running.');
   }
@@ -79,11 +78,14 @@ class UniFiProtect extends Homey.App {
               this.nvrPassword = credentials.password;
             })
             .catch(error => this.error(error));
+          // _refreshCookie after 6 hours
+          setTimeout(() => {
+            this._refreshCookie();
+          }, 2700000);
           this.log('Logged in.');
         })
         .catch(error => this.error(error));
-    }
-    else {
+    } else {
       // Log in to NVR
       this.api.login(nvrip, credentials.username, credentials.password)
         .then(() => {
