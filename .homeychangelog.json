@@ -28,5 +28,8 @@
   },
   "1.0.10": {
     "en": "Snapshot url is now Homey Public cloud url and fixed memory leak"
+  },
+  "1.1.0": {
+    "en": "removed some memory leaks"
   }
 }

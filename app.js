@@ -22,6 +22,12 @@ class UniFiProtect extends Homey.App {
     // Single API instance for all devices
     this.api = new UfPapi();
 
+    // Enable remote debugging, if applicable
+    if (Homey.env.DEBUG) {
+      // eslint-disable-next-line global-require
+      require('inspector').open(9229, '0.0.0.0');
+    }
+
     // Subscribe to credentials updates
     Homey.ManagerSettings.on('set', key => {
       if (key === 'ufp:credentials') {
@@ -79,9 +85,10 @@ class UniFiProtect extends Homey.App {
             })
             .catch(error => this.error(error));
           // _refreshCookie after 6 hours
-          setTimeout(() => {
+          const timeOutFunction = function () {
             this._refreshCookie();
-          }, 2700000);
+          }.bind(this);
+          setTimeout(timeOutFunction, 2700000);
           this.log('Logged in.');
         })
         .catch(error => this.error(error));
@@ -114,9 +121,10 @@ class UniFiProtect extends Homey.App {
         .catch(error => this.error(error));
     }
     // _checkMotion after 1 second
-    setTimeout(() => {
+    const timeOutFunction = function () {
       this._checkMotion();
-    }, 1000);
+    }.bind(this);
+    setTimeout(timeOutFunction, 1000);
   }
 
   _refreshCapabilities() {
@@ -130,10 +138,17 @@ class UniFiProtect extends Homey.App {
         })
         .catch(error => this.error(error));
     }
+    // memory collect every 5 seconds, where is the memory leak?
+    if (global.gc) {
+      global.gc();
+    } else {
+      this.warn('Can\'t find GC hook.....' );
+    }
     // _refreshCapabilities after 5 second
-    setTimeout(() => {
+    const timeOutFunction = function () {
       this._refreshCapabilities();
-    }, 5000);
+    }.bind(this);
+    setTimeout(timeOutFunction, 5000);
   }
 
   _refreshCookie() {
@@ -146,9 +161,10 @@ class UniFiProtect extends Homey.App {
         .catch(error => this.error(error));
     }
     // _refreshCookie after 6 hours
-    setTimeout(() => {
+    const timeOutFunction = function () {
       this._refreshCookie();
-    }, 2700000);
+    }.bind(this);
+    setTimeout(timeOutFunction, 2700000);
   }
 }
 
