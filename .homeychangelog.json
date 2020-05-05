@@ -31,5 +31,8 @@
   },
   "1.1.0": {
     "en": "removed some memory leaks"
+  },
+  "1.1.1": {
+    "en": "Cloud Key has been removed because of no functionality in the API."
   }
 }

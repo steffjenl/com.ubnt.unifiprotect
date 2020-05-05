@@ -1,5 +1,6 @@
 {
   "id": "unifiprotect",
+  "deprecated": true,
   "class": "other",
   "capabilities": [
     "nvr_disk_used",

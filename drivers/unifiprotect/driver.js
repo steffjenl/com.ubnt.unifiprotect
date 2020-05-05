@@ -5,7 +5,6 @@ const UfvConstants = require('../../lib/ufvconstants');
 class NvrDriver extends Homey.Driver {
   async onInit() {
     this.api = Homey.app.api;
-    this.server = null;
     this.device = null;
 
     this.log('NVR driver initialized.');
@@ -57,18 +56,6 @@ class NvrDriver extends Homey.Driver {
         socket.showView('login');
       }
     });
-  }
-
-  async onServer(server) {
-    this.log('onServer');
-
-    if (!this.server) {
-      this.server = await this.api.getServer();
-    }
-    const device = this.getDevice({ id: String(this.server.id) });
-    if (device instanceof Error) return;
-
-    device.onServer(server);
   }
 }
 
