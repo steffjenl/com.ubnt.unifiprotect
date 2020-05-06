@@ -34,5 +34,8 @@
   },
   "1.1.1": {
     "en": "Cloud Key has been removed because of no functionality in the API."
+  },
+  "1.1.2": {
+    "en": "access-key endpoint is removed from unifios devices"
   }
 }
