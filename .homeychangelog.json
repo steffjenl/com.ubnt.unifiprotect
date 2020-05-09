@@ -37,5 +37,8 @@
   },
   "1.1.2": {
     "en": "access-key endpoint is removed from unifios devices"
+  },
+  "1.2.0": {
+    "en": "Connection flow created, Snapshot timesnap removed from UI, Latest snapshot image is retrieved from UnifiOS."
   }
 }
