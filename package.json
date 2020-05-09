@@ -9,6 +9,9 @@
   "dependencies": {
     "node-fetch": "^2.6.0"
   },
+  "devDependencies": {
+    "homey": "^2.3.3"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
