@@ -35,6 +35,10 @@ Adds support for Ubiquiti UniFi Protect devices in Homey.
 * A flow action card can be used to create a snapshot, which is is saved to an Image tag.
 * A flow action card is available to set a camera's recording mode, being one of 'Don't record', 'Always record' or 'Record only motion'.
 
+## Notice
+In a beta version of Unifi Protect, all information about the NVR itself has been removed. We have made the NVR itself deprecated as a device and will be removed in the next version.
+Remove the NVR from your devices. The NVR is also no longer obliged to install it first.
+
 ## Troubleshooting / FAQ
 * Question: I am using UniFi® Dream Machine Pro and can't connect.
     * A: You must select 'UnifiOs' in the Application Settings.
