@@ -1,0 +1,29 @@
+{
+  "id": "ufp_connection_changed",
+  "title": {
+    "en": "Connection status of camera has changed",
+    "nl": "Verbindingsstatus van camera is veranderd"
+  },
+  "tokens": [
+    {
+      "name": "ufp_connection_status",
+      "type": "boolean",
+      "title": {
+        "en": "Connection status online",
+        "nl": "Verbindingsstatus online"
+      }
+    },
+    {
+      "name": "ufp_connection_camera",
+      "type": "string",
+      "title": {
+        "en": "Camera",
+        "nl": "Camera"
+      },
+      "example": {
+        "en": "Front door",
+        "nl": "Voordeur"
+      }
+    }
+  ]
+}

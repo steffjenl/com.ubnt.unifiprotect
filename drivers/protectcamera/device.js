@@ -9,12 +9,15 @@ const Api = Homey.app.api;
 class Camera extends Homey.Device {
   async onInit() {
     if (Homey.env.DEBUG) this.log('Init camera ' + this.getName());
-    // this.camera = await this.getDriver().getCamera(this.getData().id).catch(this.error.bind(this, 'Could not get camera.'));
     this.camera = this.getData();
 
     // Snapshot trigger
     this._snapshotTrigger = new Homey.FlowCardTrigger(UfvConstants.EVENT_SNAPSHOT_CREATED);
     this._snapshotTrigger.register();
+
+    // Connection Status trigger
+    this._connectionStatusTrigger = new Homey.FlowCardTrigger(UfvConstants.EVENT_CONNECTION_CHANGED);
+    this._connectionStatusTrigger.register();
 
     // Action 'take snapshot'
     new Homey.FlowCardAction(UfvConstants.ACTION_TAKE_SNAPSHOT)
@@ -83,6 +86,10 @@ class Camera extends Homey.Device {
     if (!this.hasCapability('camera_microphone_volume')) {
       this.addCapability('camera_microphone_volume');
       this.log(`created capability camera_microphone_volume for ${this.getName()}`);
+    }
+    if (!this.hasCapability('camera_connection_status')) {
+      this.addCapability('camera_connection_status');
+      this.log(`created capability camera_connection_status for ${this.getName()}`);
     }
   }
 
@@ -209,7 +216,13 @@ class Camera extends Homey.Device {
   onMotionEnd() {
     this.log('onMotionEnd');
     this.setCapabilityValue('alarm_motion', false);
-    Homey.app._refreshCapabilities();
+  }
+
+  onConnectionChanged(connectionStatus) {
+    this._connectionStatusTrigger.trigger({
+      ufp_connection_status: connectionStatus,
+      ufp_connection_camera: this.getName(),
+    });
   }
 
   onCamera(status) {
@@ -268,6 +281,12 @@ class Camera extends Homey.Device {
     }
     if (this.hasCapability('camera_microphone_volume')) {
       this.setCapabilityValue('camera_microphone_volume', cameraData.micVolume);
+    }
+    if (this.hasCapability('camera_connection_status')) {
+      if (this.getCapabilityValue('camera_connection_status') !== cameraData.isConnected) {
+        this.onConnectionChanged(cameraData.isConnected);
+      }
+      this.setCapabilityValue('camera_connection_status', cameraData.isConnected);
     }
   }
 }

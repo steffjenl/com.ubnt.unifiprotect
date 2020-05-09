@@ -70,6 +70,35 @@
   "flow": {
     "triggers": [
       {
+        "id": "ufp_connection_changed",
+        "title": {
+          "en": "Connection status of camera has changed",
+          "nl": "Verbindingsstatus van camera is veranderd"
+        },
+        "tokens": [
+          {
+            "name": "ufp_connection_status",
+            "type": "boolean",
+            "title": {
+              "en": "Connection status online",
+              "nl": "Verbindingsstatus online"
+            }
+          },
+          {
+            "name": "ufp_connection_camera",
+            "type": "string",
+            "title": {
+              "en": "Camera",
+              "nl": "Camera"
+            },
+            "example": {
+              "en": "Front door",
+              "nl": "Voordeur"
+            }
+          }
+        ]
+      },
+      {
         "id": "ufv_snapshot_created",
         "title": {
           "en": "A snapshot was created",
@@ -259,6 +288,17 @@
     }
   ],
   "capabilities": {
+    "camera_connection_status": {
+      "type": "boolean",
+      "title": {
+        "en": "Connected",
+        "nl": "Verbinding"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/connection.svg"
+    },
     "camera_microphone_status": {
       "type": "boolean",
       "title": {
@@ -311,6 +351,7 @@
         "en": "Last motion at",
         "nl": "Laatste beweging op"
       },
+      "uiComponent": null,
       "getable": true,
       "setable": false
     },

@@ -4,6 +4,7 @@
     "en": "Last motion at",
     "nl": "Laatste beweging op"
   },
+  "uiComponent": null,
   "getable": true,
   "setable": false
 }
