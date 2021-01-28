@@ -30,13 +30,12 @@ class CameraDriver extends Homey.Driver {
   }
 
   waitForBootstrap() {
-    const that = this;
     if(typeof Homey.app.api._lastUpdateId !== "undefined" && Homey.app.api._lastUpdateId !== null){
       Homey.app.api.ws.launchUpdatesListener();
       Homey.app.api.ws.configureUpdatesListener(this);
     }
     else{
-      setTimeout(that.waitForBootstrap, 250);
+      setTimeout(this.waitForBootstrap.bind(this), 250);
     }
   }
 

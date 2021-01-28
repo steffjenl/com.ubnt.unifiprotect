@@ -43,5 +43,8 @@
   },
   "1.2.1": {
     "en": "WebSocket support for faster motion triggers"
+  },
+  "1.2.2": {
+    "en": "Bugfix in setTimeout"
   }
 }
