@@ -1,6 +1,6 @@
 {
   "id": "protectcamera",
-  "class": "sensor",
+  "class": "camera",
   "capabilities": [
     "alarm_motion",
     "camera_recording_status",

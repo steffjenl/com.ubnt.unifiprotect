@@ -36,7 +36,7 @@ class UniFiProtect extends Homey.App {
     });
     this._login();
 
-    this._checkMotion();
+    // this._checkMotion();
     this._refreshCapabilities();
 
     this.log('UniFi Protect is running.');
@@ -157,6 +157,15 @@ class UniFiProtect extends Homey.App {
       this.api.loginProxy(this.nvrIp, this.nvrUsername, this.nvrPassword)
         .then(() => {
           this.log('Logged in again to refresh cookie.');
+          this.api.getBootstrapInfo()
+            .then(() => {
+              this.log('Bootstrap loaded.');
+              this.loggedIn = true;
+              this.useProxy = true;
+
+              Homey.ManagerDrivers.getDriver('protectcamera').reconnectUpdatesListener();
+            })
+            .catch(error => this.error(error));
         })
         .catch(error => this.error(error));
     }

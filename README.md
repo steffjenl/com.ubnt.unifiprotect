@@ -1,4 +1,4 @@
-# UniFi Protect
+# Ubiquiti UniFi Protect
 
 Adds support for Ubiquiti UniFi Protect devices in Homey.
 

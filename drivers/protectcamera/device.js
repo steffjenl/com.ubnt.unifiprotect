@@ -19,6 +19,10 @@ class Camera extends Homey.Device {
     this._connectionStatusTrigger = new Homey.FlowCardTrigger(UfvConstants.EVENT_CONNECTION_CHANGED);
     this._connectionStatusTrigger.register();
 
+    // Connection Status trigger
+    this._doorbellRingingTrigger = new Homey.FlowCardTrigger(UfvConstants.EVENT_DOORBELL_RINGING);
+    this._doorbellRingingTrigger.register();
+
     // Action 'take snapshot'
     new Homey.FlowCardAction(UfvConstants.ACTION_TAKE_SNAPSHOT)
       .register()
@@ -50,6 +54,11 @@ class Camera extends Homey.Device {
   }
 
   async _createMissingCapabilities() {
+    if (this.getClass() !== 'camera') {
+      this.log(`changed class to camera for ${this.getName()}`);
+      this.setClass('camera');
+    }
+
     if (!this.hasCapability('last_motion_score')) {
       this.addCapability('last_motion_score');
       this.log(`created capability last_motion_score for ${this.getName()}`);
@@ -230,6 +239,43 @@ class Camera extends Homey.Device {
     this.setCapabilityValue('camera_recording_status',
       Homey.__(`events.camera.${String(status.recordingIndicator)
         .toLowerCase()}`));
+  }
+
+  onDoorbellRinging(lastRing) {
+    this._doorbellRingingTrigger.trigger({
+      ufp_connection_lastring: lastRing,
+      ufp_connection_camera: this.getName(),
+    });
+  }
+
+  onMotionDetectedWS(lastMotionTime, isMotionDetected) {
+    const lastMotionAt = this.getCapabilityValue('last_motion_at');
+
+    if (!lastMotionAt) {
+      if (Homey.env.DEBUG) this.log(`set last_motion_at to last datetime: ${this.getData().id}`);
+      this.setCapabilityValue('last_motion_at', lastMotionTime).catch(this.error);
+      return;
+    }
+
+    // Check if the event date is newer
+    if (isMotionDetected && lastMotionTime > lastMotionAt) {
+      const lastMotion = new Date(lastMotionTime);
+      if (Homey.env.DEBUG) this.log(`new motion detected on camera: ${this.getData().id} on ${lastMotion.toLocaleString()}`);
+
+      this.setCapabilityValue('last_motion_at', lastMotionTime)
+        .catch(this.error);
+      this.setCapabilityValue('last_motion_date', lastMotion.toLocaleDateString()).catch(this.error);
+      this.setCapabilityValue('last_motion_time', lastMotion.toLocaleTimeString()).catch(this.error);
+      this.onMotionStart();
+      Api.setLastMotionAt(lastMotion);
+    } else if (!isMotionDetected && lastMotionTime > lastMotionAt) {
+      const lastMotion = new Date(lastMotion);
+      if (Homey.env.DEBUG) this.log(`motion detected ended on camera: ${this.getData().id} on ${lastMotion.toLocaleString()}`);
+      this.onMotionEnd();
+      this.setCapabilityValue('last_motion_at', lastMotionTime)
+        .catch(this.error);
+      Api.setLastMotionAt(end);
+    }
   }
 
   onMotionDetected(start, end, motionThumbnail, motionHeatmap, motionScore) {

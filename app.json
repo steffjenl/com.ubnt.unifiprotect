@@ -2,7 +2,7 @@
   "id": "com.ubnt.unifiprotect",
   "sdk": 2,
   "name": {
-    "en": "UniFi Protect"
+    "en": "Ubiquiti UniFi Protect"
   },
   "description": {
     "en": "Control Ubiquiti UniFi Protect devices with Homey.",
@@ -37,7 +37,7 @@
     "security",
     "video"
   ],
-  "version": "1.2.0",
+  "version": "1.2.1",
   "compatibility": ">=1.5.0",
   "author": {
     "name": "Stèphan Eizinga",
@@ -94,6 +94,27 @@
             "example": {
               "en": "Front door",
               "nl": "Voordeur"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ufv_doorbell_ringing",
+        "title": {
+          "en": "A doorbell is ringing",
+          "nl": "Een deurbel rinkelt"
+        },
+        "tokens": [
+          {
+            "name": "ufv_snapshot_camera",
+            "type": "string",
+            "title": {
+              "en": "Camera",
+              "nl": "Camera"
+            },
+            "example": {
+              "en": "Doorbell",
+              "nl": "Deurbel"
             }
           }
         ]
@@ -223,7 +244,7 @@
   "drivers": [
     {
       "id": "protectcamera",
-      "class": "sensor",
+      "class": "camera",
       "capabilities": [
         "alarm_motion",
         "camera_recording_status",

@@ -1,45 +1,53 @@
 {
-    "title": "UniFi Protect",
-    "pair": {
-        "validate": {
-            "title": "UniFi Cloud Key valideren",
-            "instruction": "Voeg eerst de UniFi Cloud Key aan Homey toe en probeer het daarna opnieuw."
-        },
-        "login": {
-            "title": "Inloggen"
-        }
+  "title": "UniFi Protect",
+  "pair": {
+    "validate": {
+      "title": "UniFi Cloud Key valideren",
+      "instruction": "Voeg eerst de UniFi Cloud Key aan Homey toe en probeer het daarna opnieuw."
     },
-    "settings": {
-        "title": "UniFi Protect instellingen",
-        "instruction": "Log in met de gegevens van de UniFi Protect-gebruiker.",
-        "nvr": "Gegevens van UniFi Cloud Key",
-        "nvrip": "IP-adres",
-        "nvrport": "Port",
-        "nvruseproxy": "UnifiOs (o.a. Dream Machine Pro)",
-        "credentials": "UniFi Protect gebruikersgegevens",
-        "username": "Gebruikersnaam",
-        "password": "Wachtwoord",
-        "apply": "Toepassen",
-        "saved": "Instellingen opgeslagen."
-    },
-    "events": {
-        "camera": {
-            "motion_started": "Start beweging",
-            "motion_ended": "Einde beweging",
-            "motion_inprogress": "Beweging",
-            "ftr_inprogress": "Continu",
-            "disabled": "Uitgeschakeld",
-            "failed": "Mislukt",
-            "done": "Klaar",
-            "always": "Altijd",
-            "motion": "Bij beweging",
-            "never": "Nooit"
-        },
-        "health": {
-            "unknown": "Onbekend",
-            "green": "Gezond",
-            "orange": "Waarschuwing",
-            "red": "Kritiek"
-        }
+    "login": {
+      "title": "Inloggen"
     }
+  },
+  "settings": {
+    "title": "UniFi Protect instellingen",
+    "instruction": "Log in met de gegevens van de UniFi Protect-gebruiker.",
+    "nvr": "Gegevens van UniFi Cloud Key",
+    "nvrip": "IP-adres",
+    "nvrport": "Port",
+    "nvruseproxy": "UnifiOs (o.a. Dream Machine Pro)",
+    "credentials": "UniFi Protect gebruikersgegevens",
+    "username": "Gebruikersnaam",
+    "password": "Wachtwoord",
+    "apply": "Toepassen",
+    "saved": "Instellingen opgeslagen."
+  },
+  "events": {
+    "camera": {
+      "motion_started": "Start beweging",
+      "motion_ended": "Einde beweging",
+      "motion_inprogress": "Beweging",
+      "ftr_inprogress": "Continu",
+      "disabled": "Uitgeschakeld",
+      "failed": "Mislukt",
+      "done": "Klaar",
+      "always": "Altijd",
+      "motion": "Bij beweging",
+      "never": "Nooit"
+    },
+    "health": {
+      "unknown": "Onbekend",
+      "green": "Gezond",
+      "orange": "Waarschuwing",
+      "red": "Kritiek"
+    }
+  },
+  "status": {
+    "connection": {
+      "Connected": "Verbonden",
+      "Connecting": "Bezig met verbinden...",
+      "Disconnected": "Verbinding verbroken",
+      "Initialized": "Bezig met starten"
+    }
+  }
 }

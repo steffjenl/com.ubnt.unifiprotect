@@ -1,0 +1,21 @@
+{
+  "id": "ufv_doorbell_ringing",
+  "title": {
+    "en": "A doorbell is ringing",
+    "nl": "Een deurbel rinkelt"
+  },
+  "tokens": [
+    {
+      "name": "ufv_snapshot_camera",
+      "type": "string",
+      "title": {
+        "en": "Camera",
+        "nl": "Camera"
+      },
+      "example": {
+        "en": "Doorbell",
+        "nl": "Deurbel"
+      }
+    }
+  ]
+}

@@ -6,6 +6,8 @@ class CameraDriver extends Homey.Driver {
     this.api = Homey.app.api;
     this.cameras = {};
 
+    this.waitForBootstrap();
+
     this.log('Camera driver initialized.');
   }
 
@@ -27,42 +29,45 @@ class CameraDriver extends Homey.Driver {
     });
   }
 
-  // async getCamera(id) {
-  //   if (Object.keys(this.cameras).length === 0) {
-  //     this.log('Obtaining cameras from API...');
-  //     const result = await this.api.getCameras();
-  //
-  //     Object.values(result).forEach(camera => {
-  //       this.log(`Adding camera [${camera.id}]`);
-  //       this.cameras[camera.id] = camera;
-  //     });
-  //     this.log('Finished obtaining cameras from API.');
-  //   }
-  //   this.log(`Found [${this.cameras[id].name}]`);
-  //
-  //   return this.cameras[id];
-  // }
-  //
-  // onMotion(motion) {
-  //   const device = this.getDevice({ id: String(motion.cameraId) });
-  //   if (device instanceof Error) return;
-  //
-  //   if (motion.endTime === 0) {
-  //     device.onMotionStart();
-  //   } else {
-  //     device.onMotionEnd();
-  //   }
-  // }
-  //
-  // onCamera(camera) {
-  //   const device = this.getDevice({ id: String(camera.id) });
-  //   if (device instanceof Error) return;
-  //
-  //   const status = {
-  //     recordingIndicator: camera.isRecording,
-  //   };
-  //   device.onCamera(status);
-  // }
+  waitForBootstrap() {
+    const that = this;
+    if(typeof Homey.app.api._lastUpdateId !== "undefined" && Homey.app.api._lastUpdateId !== null){
+      Homey.app.api.ws.launchUpdatesListener();
+      Homey.app.api.ws.configureUpdatesListener(this);
+    }
+    else{
+      setTimeout(that.waitForBootstrap, 250);
+    }
+  }
+
+  reconnectUpdatesListener() {
+    Homey.app.api._lastUpdateId = null;
+    Homey.app.api.ws.disconnectEventListener();
+    this.waitForBootstrap();
+  }
+
+  getDeviceById(camera)
+  {
+    const device = this.getDevice({
+      id: camera,
+    });
+
+    return device;
+  }
+
+  onParseWebsocketMotionData(device, lastMotion, isMotionDetected)
+  {
+    Homey.app.log("Lastmotion from Websockets " + lastMotion);
+    if (Object.prototype.hasOwnProperty.call(device, '_events')) {
+      device.onMotionDetectedWS(lastMotion, isMotionDetected);
+    }
+  }
+  onParseWebsocketLastRingData(device, lastRing)
+  {
+    if (Object.prototype.hasOwnProperty.call(device, '_events')) {
+      device.onDoorbellRinging(lastRing);
+    }
+  }
 
   onParseTriggerMotionData(camera, motionStart, motionEnd, motionThumbnail, motionHeatmap, motionScore) {
     const device = this.getDevice({

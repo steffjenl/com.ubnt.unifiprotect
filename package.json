@@ -7,11 +7,11 @@
     "lib": "lib"
   },
   "dependencies": {
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^2.6.0",
+    "ws": "^7.4.1",
+    "zlib": "^1.0.5"
   },
-  "devDependencies": {
-    "homey": "^2.3.3"
-  },
+  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -12,6 +12,8 @@
 <!-- Instruction -->
 <p data-i18n="settings.instruction"></p>
 
+<p><span data-i18n="settings.status">Status</span>: <span id="unifi_status" style="font-weight: bold;">Unknown</span></p>
+
 <!-- NVR -->
 <fieldset>
   <legend data-i18n="settings.nvr"></legend>
@@ -25,7 +27,7 @@
   <!-- Port -->
   <div class="field row">
     <label for="txt_nvrport" data-i18n="settings.nvrport"></label>
-    <input id="txt_nvrport" type="text" value="7443"/>
+    <input id="txt_nvrport" type="text" value="443"/>
   </div>
 
   <!-- Use proxy client -->
@@ -57,6 +59,17 @@
 <div class="field row">
   <button id="btn_apply" class="right" data-i18n="settings.apply"></button>
 </div>
+<!--
+<fieldset>
+  <legend><span data-i18n="settings.debug.title">Debug messages</span> <small><a href="#" onclick='$(".debug").toggle(); return false;'>toggle</a></small></legend>
+
+  <div id="debug_container" class='debug' style='display: none;'>
+    <p data-i18n="settings.debug.intro">Up to 100 messages are shown below, in reverse order (newest on top):</p>
+    <div id="messages"></div>
+    <p><small data-i18n="settings.debug.wait_msg">Please wait for the events to come in</small></p>
+  </div>
+</fieldset>
+-->
 
 <script type="text/javascript">
   var txtNvrIp = document.getElementById('txt_nvrip');
@@ -166,7 +179,46 @@
     });
 
     readSettings();
+
     Homey.ready();
+
+    var appendDebugMessages = (err, data) => {
+      if (err) return appendDebugMessages(null, data);
+
+      $('#debug_container #messages').prepend('<pre>' + new Date().toLocaleString() + ' : ' + data.toString() + '</pre>');
+
+      $('#messages pre').each(function(index) {
+        if (index >= 100) $(this).remove();
+      });
+    };
+
+    var updateStatusField =  (err, data) => {
+      if (err) {
+        console.log(err);
+        appendDebugMessages(err);
+        return err;
+      }
+      var color = 'darkred';
+      if (data === 'Connected') color = 'darkgreen';
+      if (data === 'Connecting...') color = 'orange';
+
+      var statusField = document.getElementById('unifi_status');
+      statusField.style.color = color;
+
+      var translationKey = 'status.connection.' + data;
+      var translation = Homey.__(translationKey);
+
+      if (translation === translationKey || translation === '' || typeof translation === 'undefined') {
+        statusField.innerHTML = data;
+      } else {
+        statusField.innerHTML = translation;
+      }
+    }
+
+    Homey.get('com.ubnt.unifiprotect.status', updateStatusField);
+    Homey.on('com.ubnt.unifiprotect.status', ( data ) => { updateStatusField(null, data); });
+    Homey.on('com.ubnt.unifiprotect.debug', ( data ) => { appendDebugMessages(null, data); });
+
   }
 </script>
 </body>

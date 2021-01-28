@@ -40,5 +40,8 @@
   },
   "1.2.0": {
     "en": "Connection flow created, Snapshot timesnap removed from UI, Latest snapshot image is retrieved from UnifiOS."
+  },
+  "1.2.1": {
+    "en": "WebSocket support for faster motion triggers"
   }
 }
