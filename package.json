@@ -1,6 +1,6 @@
 {
   "name": "com.ubnt.unifiprotect",
-  "version": "1.0.9",
+  "version": "1.2.6",
   "description": "Adds support for UniFi Protect devices.",
   "main": "app.js",
   "directories": {

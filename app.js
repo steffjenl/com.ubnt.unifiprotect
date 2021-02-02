@@ -23,9 +23,10 @@ class UniFiProtect extends Homey.App {
     this.api = new UfPapi();
 
     // Enable remote debugging, if applicable
-    if (Homey.env.DEBUG) {
+    if (Homey.env.DEBUG === 'true') {
       // eslint-disable-next-line global-require
-      require('inspector').open(9229, '0.0.0.0');
+      require('inspector')
+        .open(9229, '0.0.0.0');
     }
 
     // Subscribe to credentials updates
@@ -84,7 +85,7 @@ class UniFiProtect extends Homey.App {
               this.nvrPassword = credentials.password;
             })
             .catch(error => this.error(error));
-          // _refreshCookie after 6 hours
+          // _refreshCookie after 45 minutes
           const timeOutFunction = function () {
             this._refreshCookie();
           }.bind(this);
@@ -129,12 +130,27 @@ class UniFiProtect extends Homey.App {
 
   _refreshCapabilities() {
     if (this.loggedIn) {
-      this.api.getCameras()
-        .then(cameras => {
-          cameras.forEach(camera => {
-            Homey.ManagerDrivers.getDriver('protectcamera')
-              .onParseTriggerCameraData(camera);
-          });
+      this.api.getMotionEvents()
+        .then(events => {
+          this.api.getCameras()
+            .then(cameras => {
+              cameras.forEach(camera => {
+                Homey.ManagerDrivers.getDriver('protectcamera')
+                  .onParseTriggerCameraData(camera);
+
+                for (let event of events) {
+                  if (event.camera !== camera.id) continue;
+                  Homey.ManagerDrivers.getDriver('protectcamera')
+                    .onParseTriggerCameraEvents(event);
+                  break;
+
+                }
+
+
+              });
+            })
+            .catch(error => this.error(error));
+
         })
         .catch(error => this.error(error));
     }
@@ -142,7 +158,7 @@ class UniFiProtect extends Homey.App {
     if (global.gc) {
       global.gc();
     } else {
-      this.warn('Can\'t find GC hook.....' );
+      this.warn('Can\'t find GC hook.....');
     }
     // _refreshCapabilities after 5 second
     const timeOutFunction = function () {
@@ -153,7 +169,7 @@ class UniFiProtect extends Homey.App {
 
   _refreshCookie() {
     if (this.loggedIn && this.useProxy) {
-
+      this.api._lastUpdateId = null;
       this.api.loginProxy(this.nvrIp, this.nvrUsername, this.nvrPassword)
         .then(() => {
           this.log('Logged in again to refresh cookie.');
@@ -163,18 +179,24 @@ class UniFiProtect extends Homey.App {
               this.loggedIn = true;
               this.useProxy = true;
 
-              Homey.ManagerDrivers.getDriver('protectcamera').reconnectUpdatesListener();
+              Homey.app.log('Calling reconnectUpdatesListener');
+              Homey.ManagerDrivers.getDriver('protectcamera')
+                .reconnectUpdatesListener();
             })
             .catch(error => this.error(error));
         })
         .catch(error => this.error(error));
     }
-    // _refreshCookie after 6 hours
+
+    // _refreshCookie after 45 minutes
     const timeOutFunction = function () {
       this._refreshCookie();
     }.bind(this);
     setTimeout(timeOutFunction, 2700000);
   }
 }
+
+// 2700000
+// 30000
 
 module.exports = UniFiProtect;

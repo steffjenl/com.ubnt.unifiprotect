@@ -46,5 +46,26 @@
   },
   "1.2.2": {
     "en": "Bugfix in setTimeout"
+  },
+  "1.2.3": {
+    "en": "Bug fix for doorbell"
+  },
+  "1.2.4": {
+    "en": "Some extra features and bug fixing."
+  },
+  "1.2.5": {
+    "en": "Websockets"
+  },
+  "1.2.6": {
+    "en": "Add support for UniFi Doorbell G4 and Realtime updates."
+  },
+  "1.2.7": {
+    "en": "Add support for UniFi Doorbell G4 and Realtime updates."
+  },
+  "1.2.8": {
+    "en": "Add support for UniFi Doorbell G4 and Realtime updates."
+  },
+  "1.2.9": {
+    "en": "Add support for UniFi Doorbell G4 and Realtime updates."
   }
 }

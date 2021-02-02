@@ -31,16 +31,18 @@ class CameraDriver extends Homey.Driver {
 
   waitForBootstrap() {
     if(typeof Homey.app.api._lastUpdateId !== "undefined" && Homey.app.api._lastUpdateId !== null){
+      Homey.app.log('Called waitForBootstrap');
       Homey.app.api.ws.launchUpdatesListener();
       Homey.app.api.ws.configureUpdatesListener(this);
     }
     else{
+      Homey.app.log('Calling waitForBootstrap');
       setTimeout(this.waitForBootstrap.bind(this), 250);
     }
   }
 
   reconnectUpdatesListener() {
-    Homey.app.api._lastUpdateId = null;
+    Homey.app.log('Called reconnectUpdatesListener');
     Homey.app.api.ws.disconnectEventListener();
     this.waitForBootstrap();
   }
@@ -68,13 +70,13 @@ class CameraDriver extends Homey.Driver {
     }
   }
 
-  onParseTriggerMotionData(camera, motionStart, motionEnd, motionThumbnail, motionHeatmap, motionScore) {
+  onParseTriggerCameraEvents(cameraEvent) {
     const device = this.getDevice({
-      id: camera,
+      id: cameraEvent.camera,
     });
 
     if (Object.prototype.hasOwnProperty.call(device, '_events')) {
-      device.onMotionDetected(motionStart, motionEnd, motionThumbnail, motionHeatmap, motionScore);
+      device.onRefreshMotionData(cameraEvent.start, cameraEvent.end, cameraEvent.thumbnail, cameraEvent.heatmap, cameraEvent.score);
     }
   }
 

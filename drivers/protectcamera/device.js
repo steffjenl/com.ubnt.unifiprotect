@@ -8,6 +8,10 @@ const Api = Homey.app.api;
 
 class Camera extends Homey.Device {
   async onInit() {
+    await this.waitForBootstrap();
+  }
+
+  async initCamera() {
     if (Homey.env.DEBUG) this.log('Init camera ' + this.getName());
     this.camera = this.getData();
 
@@ -51,6 +55,14 @@ class Camera extends Homey.Device {
 
     await this._createSnapshotImage();
     await this._createMissingCapabilities();
+  }
+
+  async waitForBootstrap() {
+    if (typeof Homey.app.api.getLastUpdateId() !== 'undefined' && Homey.app.api.getLastUpdateId() !== null) {
+      await this.initCamera();
+    } else {
+      setTimeout(this.waitForBootstrap.bind(this), 250);
+    }
   }
 
   async _createMissingCapabilities() {
@@ -243,8 +255,7 @@ class Camera extends Homey.Device {
 
   onDoorbellRinging(lastRing) {
     this._doorbellRingingTrigger.trigger({
-      ufp_connection_lastring: lastRing,
-      ufp_connection_camera: this.getName(),
+      ufp_ringing_camera: this.getName(),
     });
   }
 
@@ -253,7 +264,8 @@ class Camera extends Homey.Device {
 
     if (!lastMotionAt) {
       if (Homey.env.DEBUG) this.log(`set last_motion_at to last datetime: ${this.getData().id}`);
-      this.setCapabilityValue('last_motion_at', lastMotionTime).catch(this.error);
+      this.setCapabilityValue('last_motion_at', lastMotionTime)
+        .catch(this.error);
       return;
     }
 
@@ -264,53 +276,29 @@ class Camera extends Homey.Device {
 
       this.setCapabilityValue('last_motion_at', lastMotionTime)
         .catch(this.error);
-      this.setCapabilityValue('last_motion_date', lastMotion.toLocaleDateString()).catch(this.error);
-      this.setCapabilityValue('last_motion_time', lastMotion.toLocaleTimeString()).catch(this.error);
+      this.setCapabilityValue('last_motion_date', lastMotion.toLocaleDateString())
+        .catch(this.error);
+      this.setCapabilityValue('last_motion_time', lastMotion.toLocaleTimeString())
+        .catch(this.error);
       this.onMotionStart();
-      Api.setLastMotionAt(lastMotion);
+      Api.setLastMotionAt(lastMotionTime);
     } else if (!isMotionDetected && lastMotionTime > lastMotionAt) {
-      const lastMotion = new Date(lastMotion);
+      const lastMotion = new Date(lastMotionTime);
       if (Homey.env.DEBUG) this.log(`motion detected ended on camera: ${this.getData().id} on ${lastMotion.toLocaleString()}`);
       this.onMotionEnd();
       this.setCapabilityValue('last_motion_at', lastMotionTime)
         .catch(this.error);
-      Api.setLastMotionAt(end);
+      Api.setLastMotionAt(lastMotionTime);
     }
   }
 
-  onMotionDetected(start, end, motionThumbnail, motionHeatmap, motionScore) {
-    const lastMotionAt = this.getCapabilityValue('last_motion_at');
-
-    if (!lastMotionAt) {
-      if (Homey.env.DEBUG) this.log(`set last_motion_at to last datetime: ${this.getData().id}`);
-      this.setCapabilityValue('last_motion_at', start).catch(this.error);
-      return;
-    }
-
-    // Check if the event date is newer
-    if (start > lastMotionAt) {
-      const lastMotion = new Date(start);
-      if (Homey.env.DEBUG) this.log(`new motion detected on camera: ${this.getData().id} on ${lastMotion.toLocaleString()}`);
-
-      this.setCapabilityValue('last_motion_at', start)
-        .catch(this.error);
-      this.setCapabilityValue('last_motion_score', Number(motionScore)).catch(this.error);
-      this.setCapabilityValue('last_motion_thumbnail', motionThumbnail).catch(this.error);
-      this.setCapabilityValue('last_motion_heatmap', motionHeatmap).catch(this.error);
-      this.setCapabilityValue('last_motion_date', lastMotion.toLocaleDateString()).catch(this.error);
-      this.setCapabilityValue('last_motion_time', lastMotion.toLocaleTimeString()).catch(this.error);
-      this.onMotionStart();
-      Api.setLastMotionAt(start);
-    } else if (end > lastMotionAt) {
-      const lastMotion = new Date(end);
-      if (Homey.env.DEBUG) this.log(`motion detected ended on camera: ${this.getData().id} on ${lastMotion.toLocaleString()}`);
-      this.onMotionEnd();
-      this.setCapabilityValue('last_motion_at', end)
-        .catch(this.error);
-      if (this.hasCapability('last_motion_score') && Number(motionScore) > 0) this.setCapabilityValue('last_motion_score', Number(motionScore))
-        .catch(this.error);
-      Api.setLastMotionAt(end);
-    }
+  onRefreshMotionData(start, end, motionThumbnail, motionHeatmap, motionScore) {
+    this.setCapabilityValue('last_motion_score', Number(motionScore))
+      .catch(this.error);
+    this.setCapabilityValue('last_motion_thumbnail', motionThumbnail)
+      .catch(this.error);
+    this.setCapabilityValue('last_motion_heatmap', motionHeatmap)
+      .catch(this.error);
   }
 
   onRefreshCamera(cameraData) {

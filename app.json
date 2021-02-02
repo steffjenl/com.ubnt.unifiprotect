@@ -37,7 +37,7 @@
     "security",
     "video"
   ],
-  "version": "1.2.2",
+  "version": "1.2.9",
   "compatibility": ">=1.5.0",
   "author": {
     "name": "Stèphan Eizinga",
@@ -99,14 +99,14 @@
         ]
       },
       {
-        "id": "ufv_doorbell_ringing",
+        "id": "ufp_doorbell_ringing",
         "title": {
           "en": "A doorbell is ringing",
           "nl": "Een deurbel rinkelt"
         },
         "tokens": [
           {
-            "name": "ufv_snapshot_camera",
+            "name": "ufp_ringing_camera",
             "type": "string",
             "title": {
               "en": "Camera",

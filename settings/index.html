@@ -13,7 +13,8 @@
 <p data-i18n="settings.instruction"></p>
 
 <p><span data-i18n="settings.status">Status</span>: <span id="unifi_status" style="font-weight: bold;">Unknown</span></p>
-
+<p><span data-i18n="settings.websocket.status">Realtime updates Status</span>: <span id="unifi_websocket_status" style="font-weight: bold;">Unknown</span></p>
+<p><span data-i18n="settings.websocket.status">Last message</span>: <span id="unifi_websocket_lastmessage" style="font-weight: bold;">Unknown</span></p>
 <!-- NVR -->
 <fieldset>
   <legend data-i18n="settings.nvr"></legend>
@@ -182,7 +183,7 @@
 
     Homey.ready();
 
-    var appendDebugMessages = (err, data) => {
+    const appendDebugMessages = (err, data) => {
       if (err) return appendDebugMessages(null, data);
 
       $('#debug_container #messages').prepend('<pre>' + new Date().toLocaleString() + ' : ' + data.toString() + '</pre>');
@@ -192,7 +193,7 @@
       });
     };
 
-    var updateStatusField =  (err, data) => {
+    const updateStatusField =  (err, data) => {
       if (err) {
         console.log(err);
         appendDebugMessages(err);
@@ -215,9 +216,48 @@
       }
     }
 
+    const updateWebsocketStatusField =  (err, data) => {
+      if (err) {
+        console.log(err);
+        appendDebugMessages(err);
+        return err;
+      }
+      var color = 'darkred';
+      if (data === 'Connected') color = 'darkgreen';
+      if (data === 'Connecting...') color = 'orange';
+
+      var statusField = document.getElementById('unifi_websocket_status');
+      statusField.style.color = color;
+
+      var translationKey = 'status.connection.' + data;
+      var translation = Homey.__(translationKey);
+
+      if (translation === translationKey || translation === '' || typeof translation === 'undefined') {
+        statusField.innerHTML = data;
+      } else {
+        statusField.innerHTML = translation;
+      }
+    }
+
+    const updateWebsocketLastMessageField =  (err, data) => {
+      if (err) {
+        console.log(err);
+        appendDebugMessages(err);
+        return err;
+      }
+
+      var statusField = document.getElementById('unifi_websocket_lastmessage');
+      statusField.innerHTML = data;
+    }
+
     Homey.get('com.ubnt.unifiprotect.status', updateStatusField);
     Homey.on('com.ubnt.unifiprotect.status', ( data ) => { updateStatusField(null, data); });
     Homey.on('com.ubnt.unifiprotect.debug', ( data ) => { appendDebugMessages(null, data); });
+    Homey.get('com.ubnt.unifiprotect.websocket.status', updateWebsocketStatusField);
+    Homey.on('com.ubnt.unifiprotect.websocket.status', ( data ) => { updateWebsocketStatusField(null, data); });
+    // com.ubnt.unifiprotect.websocket.lastpong
+    Homey.get('com.ubnt.unifiprotect.websocket.lastmessage', updateWebsocketLastMessageField);
+    Homey.on('com.ubnt.unifiprotect.websocket.lastmessage', ( data ) => { updateWebsocketLastMessageField(null, data); });
 
   }
 </script>
