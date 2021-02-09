@@ -12,7 +12,7 @@ class Camera extends Homey.Device {
   }
 
   async initCamera() {
-    if (Homey.env.DEBUG) this.log('Init camera ' + this.getName());
+    if (Homey.env.DEBUG) Homey.app.debug('Init camera ' + this.getName());
     this.camera = this.getData();
 
     // Snapshot trigger
@@ -42,7 +42,7 @@ class Camera extends Homey.Device {
       .register()
       .registerRunListener((args, state) => { // eslint-disable-line no-unused-vars
         Api.setRecordingMode(args.device.getData(), args.recording_mode)
-          .then(this.log.bind(this, '[recordingmode.set]'))
+          .then(Homey.app.debug.bind(this, '[recordingmode.set]'))
           .catch(this.error.bind(this, '[recordingmode.set]'));
 
         return Promise.resolve(true);
@@ -67,50 +67,50 @@ class Camera extends Homey.Device {
 
   async _createMissingCapabilities() {
     if (this.getClass() !== 'camera') {
-      this.log(`changed class to camera for ${this.getName()}`);
+      Homey.app.debug(`changed class to camera for ${this.getName()}`);
       this.setClass('camera');
     }
 
     if (!this.hasCapability('last_motion_score')) {
       this.addCapability('last_motion_score');
-      this.log(`created capability last_motion_score for ${this.getName()}`);
+      Homey.app.debug(`created capability last_motion_score for ${this.getName()}`);
     }
 
     if (!this.hasCapability('last_motion_thumbnail')) {
       this.addCapability('last_motion_thumbnail');
-      this.log(`created capability last_motion_thumbnail for ${this.getName()}`);
+      Homey.app.debug(`created capability last_motion_thumbnail for ${this.getName()}`);
     }
     if (!this.hasCapability('last_motion_heatmap')) {
       this.addCapability('last_motion_heatmap');
-      this.log(`created capability last_motion_heatmap for ${this.getName()}`);
+      Homey.app.debug(`created capability last_motion_heatmap for ${this.getName()}`);
     }
     if (this.hasCapability('last_motion_datetime')) {
       this.removeCapability('last_motion_datetime');
-      this.log(`removed capability last_motion_datetime for ${this.getName()}`);
+      Homey.app.debug(`removed capability last_motion_datetime for ${this.getName()}`);
     }
     if (!this.hasCapability('last_motion_date')) {
       this.addCapability('last_motion_date');
-      this.log(`created capability last_motion_date for ${this.getName()}`);
+      Homey.app.debug(`created capability last_motion_date for ${this.getName()}`);
     }
     if (!this.hasCapability('last_motion_time')) {
       this.addCapability('last_motion_time');
-      this.log(`created capability last_motion_time for ${this.getName()}`);
+      Homey.app.debug(`created capability last_motion_time for ${this.getName()}`);
     }
     if (!this.hasCapability('camera_recording_mode')) {
       this.addCapability('camera_recording_mode');
-      this.log(`created capability camera_recording_mode for ${this.getName()}`);
+      Homey.app.debug(`created capability camera_recording_mode for ${this.getName()}`);
     }
     if (!this.hasCapability('camera_microphone_status')) {
       this.addCapability('camera_microphone_status');
-      this.log(`created capability camera_microphone_status for ${this.getName()}`);
+      Homey.app.debug(`created capability camera_microphone_status for ${this.getName()}`);
     }
     if (!this.hasCapability('camera_microphone_volume')) {
       this.addCapability('camera_microphone_volume');
-      this.log(`created capability camera_microphone_volume for ${this.getName()}`);
+      Homey.app.debug(`created capability camera_microphone_volume for ${this.getName()}`);
     }
     if (!this.hasCapability('camera_connection_status')) {
       this.addCapability('camera_connection_status');
-      this.log(`created capability camera_connection_status for ${this.getName()}`);
+      Homey.app.debug(`created capability camera_connection_status for ${this.getName()}`);
     }
   }
 
@@ -157,11 +157,11 @@ class Camera extends Homey.Device {
                 .then(() => {
                   Homey.app.snapshotToken.setValue(SnapshotImage);
 
-                  if (Homey.env.DEBUG) this.log('------ _onSnapshotBuffer ------');
-                  if (Homey.env.DEBUG) this.log(`- Camera name: ${this.getName()}`);
-                  if (Homey.env.DEBUG) this.log(`- Snapshot url: ${SnapshotImage.cloudUrl}`);
-                  if (Homey.env.DEBUG) this.log(`- Stream url: ${streamUrl}`);
-                  if (Homey.env.DEBUG) this.log('-------------------------------');
+                  if (Homey.env.DEBUG) Homey.app.debug('------ _onSnapshotBuffer ------');
+                  if (Homey.env.DEBUG) Homey.app.debug(`- Camera name: ${this.getName()}`);
+                  if (Homey.env.DEBUG) Homey.app.debug(`- Snapshot url: ${SnapshotImage.cloudUrl}`);
+                  if (Homey.env.DEBUG) Homey.app.debug(`- Stream url: ${streamUrl}`);
+                  if (Homey.env.DEBUG) Homey.app.debug('-------------------------------');
 
                   this._snapshotTrigger.trigger({
                     ufv_snapshot_token: SnapshotImage,
@@ -179,7 +179,7 @@ class Camera extends Homey.Device {
   }
 
   async _createSnapshotImage() {
-    if (Homey.env.DEBUG) this.log('Creating snapshot image for camera ' + this.getName() + '.');
+    if (Homey.env.DEBUG) Homey.app.debug('Creating snapshot image for camera ' + this.getName() + '.');
 
     this._snapshotImage = new Homey.Image();
     this._snapshotImage.setStream(async stream => {
@@ -226,16 +226,16 @@ class Camera extends Homey.Device {
       .then(() => this.setCameraImage('snapshot', 'Snapshot', this._snapshotImage))
       .catch(this.error);
 
-    if (Homey.env.DEBUG) this.log('Created snapshot image for camera ' + this.getName() + '.');
+    if (Homey.env.DEBUG) Homey.app.debug('Created snapshot image for camera ' + this.getName() + '.');
   }
 
   onMotionStart() {
-    this.log('onMotionStart');
+    Homey.app.debug('onMotionStart');
     this.setCapabilityValue('alarm_motion', true);
   }
 
   onMotionEnd() {
-    this.log('onMotionEnd');
+    Homey.app.debug('onMotionEnd');
     this.setCapabilityValue('alarm_motion', false);
   }
 
@@ -247,7 +247,7 @@ class Camera extends Homey.Device {
   }
 
   onCamera(status) {
-    this.log('onCamera');
+    Homey.app.debug('onCamera');
     this.setCapabilityValue('camera_recording_status',
       Homey.__(`events.camera.${String(status.recordingIndicator)
         .toLowerCase()}`));
@@ -263,7 +263,7 @@ class Camera extends Homey.Device {
     const lastMotionAt = this.getCapabilityValue('last_motion_at');
 
     if (!lastMotionAt) {
-      if (Homey.env.DEBUG) this.log(`set last_motion_at to last datetime: ${this.getData().id}`);
+      if (Homey.env.DEBUG) Homey.app.debug(`set last_motion_at to last datetime: ${this.getData().id}`);
       this.setCapabilityValue('last_motion_at', lastMotionTime)
         .catch(this.error);
       return;
@@ -272,7 +272,7 @@ class Camera extends Homey.Device {
     // Check if the event date is newer
     if (isMotionDetected && lastMotionTime > lastMotionAt) {
       const lastMotion = new Date(lastMotionTime);
-      if (Homey.env.DEBUG) this.log(`new motion detected on camera: ${this.getData().id} on ${lastMotion.toLocaleString()}`);
+      if (Homey.env.DEBUG) Homey.app.debug(`new motion detected on camera: ${this.getData().id} on ${lastMotion.toLocaleString()}`);
 
       this.setCapabilityValue('last_motion_at', lastMotionTime)
         .catch(this.error);
@@ -284,7 +284,7 @@ class Camera extends Homey.Device {
       Api.setLastMotionAt(lastMotionTime);
     } else if (!isMotionDetected && lastMotionTime > lastMotionAt) {
       const lastMotion = new Date(lastMotionTime);
-      if (Homey.env.DEBUG) this.log(`motion detected ended on camera: ${this.getData().id} on ${lastMotion.toLocaleString()}`);
+      if (Homey.env.DEBUG) Homey.app.debug(`motion detected ended on camera: ${this.getData().id} on ${lastMotion.toLocaleString()}`);
       this.onMotionEnd();
       this.setCapabilityValue('last_motion_at', lastMotionTime)
         .catch(this.error);

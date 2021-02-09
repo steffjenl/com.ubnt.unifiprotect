@@ -7,7 +7,7 @@ class NvrDriver extends Homey.Driver {
     this.api = Homey.app.api;
     this.device = null;
 
-    this.log('NVR driver initialized.');
+    Homey.app.debug('NVR driver initialized.');
   }
 
   onPair(socket) {
@@ -31,7 +31,7 @@ class NvrDriver extends Homey.Driver {
 
     // Perform when view is changed
     socket.on('showView', (viewId, callback) => {
-      this.log(`onShowView [${viewId}]`);
+      Homey.app.debug(`onShowView [${viewId}]`);
 
       if (viewId === 'login') {
         socket.emit('nvrip', Homey.ManagerSettings.get('ufp:nvrip'));
@@ -46,7 +46,7 @@ class NvrDriver extends Homey.Driver {
 
     // Perform when NVR is discovered
     this.api.on(UfvConstants.DEVICE_NVR, nvr => {
-      this.log('onNvr');
+      Homey.app.debug('onNvr');
       Homey.ManagerSettings.set('ufp:nvrip', nvr.ip);
 
       const credentials = Homey.ManagerSettings.get('ufp:credentials');

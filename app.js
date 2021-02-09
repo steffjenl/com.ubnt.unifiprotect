@@ -2,6 +2,8 @@
 const Homey = require('homey');
 const UfPapi = require('./lib/ufpapi');
 const UfvConstants = require('./lib/ufvconstants');
+const ManagerApi = Homey.ManagerApi;
+const Settings = Homey.ManagerSettings;
 
 class UniFiProtect extends Homey.App {
   async onInit() {
@@ -40,16 +42,16 @@ class UniFiProtect extends Homey.App {
     // this._checkMotion();
     this._refreshCapabilities();
 
-    this.log('UniFi Protect is running.');
+    this.debug('UniFi Protect is running.');
   }
 
   _login() {
-    this.log('Logging in...');
+    this.debug('Logging in...');
 
     // Validate NVR IP address
     const nvrip = Homey.ManagerSettings.get('ufp:nvrip');
     if (!nvrip) {
-      this.log('NVR IP address not set.');
+      this.debug('NVR IP address not set.');
       return;
     }
 
@@ -62,7 +64,7 @@ class UniFiProtect extends Homey.App {
     // Validate NVR credentials
     const credentials = Homey.ManagerSettings.get('ufp:credentials');
     if (!credentials) {
-      this.log('Credentials not set.');
+      this.debug('Credentials not set.');
       return;
     }
 
@@ -76,7 +78,7 @@ class UniFiProtect extends Homey.App {
         .then(() => {
           this.api.getBootstrapInfo()
             .then(() => {
-              this.log('Bootstrap loaded.');
+              this.debug('Bootstrap loaded.');
               this.loggedIn = true;
               this.useProxy = true;
 
@@ -90,7 +92,7 @@ class UniFiProtect extends Homey.App {
             this._refreshCookie();
           }.bind(this);
           setTimeout(timeOutFunction, 2700000);
-          this.log('Logged in.');
+          this.debug('Logged in.');
         })
         .catch(error => this.error(error));
     } else {
@@ -99,11 +101,11 @@ class UniFiProtect extends Homey.App {
         .then(() => {
           this.api.getBootstrapInfo()
             .then(() => {
-              this.log('Bootstrap loaded.');
+              this.debug('Bootstrap loaded.');
               this.loggedIn = true;
             })
             .catch(error => this.error(error));
-          this.log('Logged in.');
+          this.debug('Logged in.');
         })
         .catch(error => this.error(error));
     }
@@ -172,14 +174,14 @@ class UniFiProtect extends Homey.App {
       this.api._lastUpdateId = null;
       this.api.loginProxy(this.nvrIp, this.nvrUsername, this.nvrPassword)
         .then(() => {
-          this.log('Logged in again to refresh cookie.');
+          this.debug('Logged in again to refresh cookie.');
           this.api.getBootstrapInfo()
             .then(() => {
               this.log('Bootstrap loaded.');
               this.loggedIn = true;
               this.useProxy = true;
 
-              Homey.app.log('Calling reconnectUpdatesListener');
+              Homey.app.debug('Calling reconnectUpdatesListener');
               Homey.ManagerDrivers.getDriver('protectcamera')
                 .reconnectUpdatesListener();
             })
@@ -194,9 +196,16 @@ class UniFiProtect extends Homey.App {
     }.bind(this);
     setTimeout(timeOutFunction, 2700000);
   }
-}
 
-// 2700000
-// 30000
+  debug(message) {
+    if (Homey.env.DEBUG === 'true') {
+      Homey.app.log(message);
+    }
+
+    ManagerApi.realtime(UfvConstants.EVENT_SETTINGS_DEBUG, message);
+    Settings.set(UfvConstants.EVENT_SETTINGS_DEBUG, message);
+  }
+
+}
 
 module.exports = UniFiProtect;

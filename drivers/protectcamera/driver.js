@@ -8,7 +8,7 @@ class CameraDriver extends Homey.Driver {
 
     this.waitForBootstrap();
 
-    this.log('Camera driver initialized.');
+    Homey.app.debug('Camera driver initialized.');
   }
 
   onPair(socket) {
@@ -31,18 +31,18 @@ class CameraDriver extends Homey.Driver {
 
   waitForBootstrap() {
     if(typeof Homey.app.api._lastUpdateId !== "undefined" && Homey.app.api._lastUpdateId !== null){
-      Homey.app.log('Called waitForBootstrap');
+      Homey.app.debug('Called waitForBootstrap');
       Homey.app.api.ws.launchUpdatesListener();
       Homey.app.api.ws.configureUpdatesListener(this);
     }
     else{
-      Homey.app.log('Calling waitForBootstrap');
+      Homey.app.debug('Calling waitForBootstrap');
       setTimeout(this.waitForBootstrap.bind(this), 250);
     }
   }
 
   reconnectUpdatesListener() {
-    Homey.app.log('Called reconnectUpdatesListener');
+    Homey.app.debug('Called reconnectUpdatesListener');
     Homey.app.api.ws.disconnectEventListener();
     this.waitForBootstrap();
   }
@@ -58,7 +58,7 @@ class CameraDriver extends Homey.Driver {
 
   onParseWebsocketMotionData(device, lastMotion, isMotionDetected)
   {
-    Homey.app.log("Lastmotion from Websockets " + lastMotion);
+    Homey.app.debug("Lastmotion from Websockets " + lastMotion);
     if (Object.prototype.hasOwnProperty.call(device, '_events')) {
       device.onMotionDetectedWS(lastMotion, isMotionDetected);
     }
