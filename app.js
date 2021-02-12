@@ -203,7 +203,6 @@ class UniFiProtect extends Homey.App {
     }
 
     ManagerApi.realtime(UfvConstants.EVENT_SETTINGS_DEBUG, message);
-    Settings.set(UfvConstants.EVENT_SETTINGS_DEBUG, message);
   }
 
 }

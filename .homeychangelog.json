@@ -67,5 +67,8 @@
   },
   "1.2.9": {
     "en": "Add support for UniFi Doorbell G4 and Realtime updates."
+  },
+  "1.2.10": {
+    "en": "Fixed doorbell also sends lastMotion and added an debug messages box in the settings page."
   }
 }
