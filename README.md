@@ -18,6 +18,7 @@ Adds support for Ubiquiti UniFi Protect devices in Homey.
 * UniFi® Video Camera G4 series:
 	* UVC-G4-PRO
 	* UVC-G4-BULLET
+  * UVC-G4-DoorBell
 
 ## Getting started
 
@@ -40,8 +41,8 @@ In a beta version of Unifi Protect, all information about the NVR itself has bee
 Remove the NVR from your devices. The NVR is also no longer obliged to install it first.
 
 ## Troubleshooting / FAQ
-* Question: I am using UniFi® Dream Machine Pro and can't connect.
-    * A: You must select 'UnifiOs' in the Application Settings.
+* Question: I am using not the latest firmware on the cloudkey and can't connect.
+    * A: Please upgrade your Cloudkey to 2.0.27 and Protect version 1.17.2
 * Question: I get a lot of false motion alerts. Is there anything to do about that?
     * A: Turn off 'Enable Auto Rotate' and rotate the camera manually.
     * A: Remove the default motion zone and create a motion zone with only the zone what you want to detect motions.
