@@ -79,5 +79,8 @@
   },
   "1.2.14": {
     "en": "Bugfix application error when driver is not found"
+  },
+  "1.2.15": {
+    "en": "Removed old firmware code"
   }
 }
