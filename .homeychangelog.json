@@ -70,5 +70,14 @@
   },
   "1.2.10": {
     "en": "Fixed doorbell also sends lastMotion and added an debug messages box in the settings page."
+  },
+  "1.2.11": {
+    "en": "Removed Settings.set functions"
+  },
+  "1.2.13": {
+    "en": "Moved Websocket client from driver to application."
+  },
+  "1.2.14": {
+    "en": "Bugfix application error when driver is not found"
   }
 }
