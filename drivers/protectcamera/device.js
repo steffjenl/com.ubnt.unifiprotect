@@ -131,13 +131,7 @@ class Camera extends Homey.Device {
 
                 const headers = {};
 
-                if (Api.getUseProxy()) {
-                  headers['Cookie'] = Api.getProxyCookieToken();
-                } else {
-                  if (Api.getAuthorization() !== '') {
-                    headers['Authorization'] = `Bearer ${Api.getAuthorization()}`;
-                  }
-                }
+                headers['Cookie'] = Api.getProxyCookieToken();
 
                 const agent = new https.Agent({
                   rejectUnauthorized: false,
@@ -197,14 +191,7 @@ class Camera extends Homey.Device {
       }
 
       const headers = {};
-
-      if (Api.getUseProxy()) {
-        headers['Cookie'] = Api.getProxyCookieToken();
-      } else {
-        if (Api.getAuthorization() !== '') {
-          headers['Authorization'] = `Bearer ${Api.getAuthorization()}`;
-        }
-      }
+      headers['Cookie'] = Api.getProxyCookieToken();
 
       const agent = new https.Agent({
         rejectUnauthorized: false,

@@ -8,8 +8,6 @@ const Settings = Homey.ManagerSettings;
 class UniFiProtect extends Homey.App {
   async onInit() {
     this.loggedIn = false;
-    this.useProxy = false;
-
     this.nvrIp = false;
     this.nvrUsername = false;
     this.nvrPassword = false;
@@ -42,6 +40,9 @@ class UniFiProtect extends Homey.App {
     // this._checkMotion();
     this._refreshCapabilities();
 
+    // wait for bootstrap and start websocket
+    this._waitForBootstrap();
+
     this.debug('UniFi Protect is running.');
   }
 
@@ -68,47 +69,27 @@ class UniFiProtect extends Homey.App {
       return;
     }
 
-    // Validate NVR IP address
-    const nvrUseProxy = Homey.ManagerSettings.get('ufp:useproxy');
-
-    if (nvrUseProxy === 'true') {
-      this.api.setApiPort(443);
-      // Log in to NVR
-      this.api.loginProxy(nvrip, credentials.username, credentials.password)
-        .then(() => {
-          this.api.getBootstrapInfo()
-            .then(() => {
-              this.debug('Bootstrap loaded.');
-              this.loggedIn = true;
-              this.useProxy = true;
-
-              this.nvrIp = nvrip;
-              this.nvrUsername = credentials.username;
-              this.nvrPassword = credentials.password;
-            })
-            .catch(error => this.error(error));
-          // _refreshCookie after 45 minutes
-          const timeOutFunction = function () {
-            this._refreshCookie();
-          }.bind(this);
-          setTimeout(timeOutFunction, 2700000);
-          this.debug('Logged in.');
-        })
-        .catch(error => this.error(error));
-    } else {
-      // Log in to NVR
-      this.api.login(nvrip, credentials.username, credentials.password)
-        .then(() => {
-          this.api.getBootstrapInfo()
-            .then(() => {
-              this.debug('Bootstrap loaded.');
-              this.loggedIn = true;
-            })
-            .catch(error => this.error(error));
-          this.debug('Logged in.');
-        })
-        .catch(error => this.error(error));
-    }
+    this.api.setApiPort(443);
+    // Log in to NVR
+    this.api.loginProxy(nvrip, credentials.username, credentials.password)
+      .then(() => {
+        this.api.getBootstrapInfo()
+          .then(() => {
+            this.debug('Bootstrap loaded.');
+            this.loggedIn = true;
+            this.nvrIp = nvrip;
+            this.nvrUsername = credentials.username;
+            this.nvrPassword = credentials.password;
+          })
+          .catch(error => this.error(error));
+        // _refreshCookie after 45 minutes
+        const timeOutFunction = function () {
+          this._refreshCookie();
+        }.bind(this);
+        setTimeout(timeOutFunction, 2700000);
+        this.debug('Logged in.');
+      })
+      .catch(error => this.error(error));
   }
 
   _checkMotion() {
@@ -170,7 +151,7 @@ class UniFiProtect extends Homey.App {
   }
 
   _refreshCookie() {
-    if (this.loggedIn && this.useProxy) {
+    if (this.loggedIn) {
       this.api._lastUpdateId = null;
       this.api.loginProxy(this.nvrIp, this.nvrUsername, this.nvrPassword)
         .then(() => {
@@ -179,11 +160,9 @@ class UniFiProtect extends Homey.App {
             .then(() => {
               this.log('Bootstrap loaded.');
               this.loggedIn = true;
-              this.useProxy = true;
 
               Homey.app.debug('Calling reconnectUpdatesListener');
-              Homey.ManagerDrivers.getDriver('protectcamera')
-                .reconnectUpdatesListener();
+              Homey.app.api.ws.reconnectUpdatesListener();
             })
             .catch(error => this.error(error));
         })
@@ -197,6 +176,18 @@ class UniFiProtect extends Homey.App {
     setTimeout(timeOutFunction, 2700000);
   }
 
+  _waitForBootstrap() {
+    if (typeof Homey.app.api._lastUpdateId !== 'undefined' && Homey.app.api._lastUpdateId !== null) {
+      Homey.app.debug('Called waitForBootstrap');
+      Homey.app.api.ws.launchUpdatesListener();
+      Homey.app.api.ws.configureUpdatesListener();
+    } else {
+      Homey.app.debug('Calling waitForBootstrap');
+      setTimeout(this._waitForBootstrap.bind(this), 250);
+    }
+  }
+
+
   debug(message) {
     if (Homey.env.DEBUG === 'true') {
       Homey.app.log(message);
@@ -206,5 +197,8 @@ class UniFiProtect extends Homey.App {
   }
 
 }
+
+// 2700000
+// 300000
 
 module.exports = UniFiProtect;

@@ -32,12 +32,6 @@
     <input id="txt_nvrport" type="text" value="443"/>
   </div>
 
-  <!-- Use proxy client -->
-  <div class="field row">
-    <label for="txt_nvruseproxy" data-i18n="settings.nvruseproxy"></label>
-    <input id="txt_nvruseproxy" type="checkbox"/>
-  </div>
-
 </fieldset>
 
 <!-- Credentials -->
@@ -77,7 +71,6 @@
   var txtNvrPort = document.getElementById('txt_nvrport');
   var txtUsername = document.getElementById('txt_username');
   var txtPassword = document.getElementById('txt_password');
-  var txtNvrUseProxy = document.getElementById('txt_nvruseproxy');
   var btnApply = document.getElementById('btn_apply');
 
   function onHomeyReady(Homey) {
@@ -102,16 +95,6 @@
         }
       });
 
-      Homey.get('ufp:useproxy', (error, useproxy) => {
-        if (error) return Homey.alert(error);
-
-        if (useproxy) {
-          txtNvrUseProxy.checked = (useproxy === 'true');
-        } else {
-          console.warn('[SETTINGS] Could not read UniFi Cloud Key Use Proxy.');
-        }
-      });
-
       Homey.get('ufp:credentials', (error, credentials) => {
         if (error) return Homey.alert(error);
 
@@ -128,7 +111,6 @@
       Homey.api('POST', '/settings/validate', {
         'hostname': txtNvrIp.value,
         'port': txtNvrPort.value,
-        'useProxy': (txtNvrUseProxy.checked ? 'true' : 'false'),
         'username': txtUsername.value,
         'password': txtPassword.value
       }, function (err, result) {
@@ -143,11 +125,6 @@
           console.log('[SETTINGS] UniFi Cloud Key Port saved.');
         });
 
-        Homey.set('ufp:useproxy', (txtNvrUseProxy.checked ? 'true' : 'false'), (error, result) => {
-          if (error) return Homey.alert(error);
-          console.log('[SETTINGS] UniFi Cloud Key Use Proxy Key saved.');
-        });
-
         const credentials = {
           'username': txtUsername.value,
           'password': txtPassword.value
@@ -160,20 +137,6 @@
         Homey.alert(Homey.__('settings.saved'), 'info');
       });
     };
-
-    const changePort = () => {
-      if (txtNvrUseProxy.checked)
-      {
-        txtNvrPort.value = 443;
-      }
-      else {
-        txtNvrPort.value = 7443;
-      }
-    }
-
-    txtNvrUseProxy.addEventListener('change', e => {
-      changePort();
-    });
 
     btnApply.addEventListener('click', e => {
       saveSettings();

@@ -6,8 +6,6 @@ class CameraDriver extends Homey.Driver {
     this.api = Homey.app.api;
     this.cameras = {};
 
-    this.waitForBootstrap();
-
     Homey.app.debug('Camera driver initialized.');
   }
 
@@ -27,24 +25,6 @@ class CameraDriver extends Homey.Driver {
         };
       }));
     });
-  }
-
-  waitForBootstrap() {
-    if(typeof Homey.app.api._lastUpdateId !== "undefined" && Homey.app.api._lastUpdateId !== null){
-      Homey.app.debug('Called waitForBootstrap');
-      Homey.app.api.ws.launchUpdatesListener();
-      Homey.app.api.ws.configureUpdatesListener(this);
-    }
-    else{
-      Homey.app.debug('Calling waitForBootstrap');
-      setTimeout(this.waitForBootstrap.bind(this), 250);
-    }
-  }
-
-  reconnectUpdatesListener() {
-    Homey.app.debug('Called reconnectUpdatesListener');
-    Homey.app.api.ws.disconnectEventListener();
-    this.waitForBootstrap();
   }
 
   getDeviceById(camera)
