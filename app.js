@@ -3,7 +3,6 @@ const Homey = require('homey');
 const UfPapi = require('./lib/ufpapi');
 const UfvConstants = require('./lib/ufvconstants');
 const ManagerApi = Homey.ManagerApi;
-const Settings = Homey.ManagerSettings;
 
 class UniFiProtect extends Homey.App {
   async onInit() {
@@ -41,18 +40,18 @@ class UniFiProtect extends Homey.App {
     this._refreshCapabilities();
 
     // wait for bootstrap and start websocket
-    this._waitForBootstrap();
+    this.api.ws.waitForBootstrap();
 
-    this.debug('UniFi Protect is running.');
+    Homey.app.debug('UniFi Protect is running.');
   }
 
   _login() {
-    this.debug('Logging in...');
+    Homey.app.debug('Logging in...');
 
     // Validate NVR IP address
     const nvrip = Homey.ManagerSettings.get('ufp:nvrip');
     if (!nvrip) {
-      this.debug('NVR IP address not set.');
+      Homey.app.debug('NVR IP address not set.');
       return;
     }
 
@@ -65,7 +64,7 @@ class UniFiProtect extends Homey.App {
     // Validate NVR credentials
     const credentials = Homey.ManagerSettings.get('ufp:credentials');
     if (!credentials) {
-      this.debug('Credentials not set.');
+      Homey.app.debug('Credentials not set.');
       return;
     }
 
@@ -75,7 +74,7 @@ class UniFiProtect extends Homey.App {
       .then(() => {
         this.api.getBootstrapInfo()
           .then(() => {
-            this.debug('Bootstrap loaded.');
+            Homey.app.debug('Bootstrap loaded.');
             this.loggedIn = true;
             this.nvrIp = nvrip;
             this.nvrUsername = credentials.username;
@@ -87,7 +86,7 @@ class UniFiProtect extends Homey.App {
           this._refreshCookie();
         }.bind(this);
         setTimeout(timeOutFunction, 2700000);
-        this.debug('Logged in.');
+        Homey.app.debug('Logged in.');
       })
       .catch(error => this.error(error));
   }
@@ -155,7 +154,7 @@ class UniFiProtect extends Homey.App {
       this.api._lastUpdateId = null;
       this.api.loginProxy(this.nvrIp, this.nvrUsername, this.nvrPassword)
         .then(() => {
-          this.debug('Logged in again to refresh cookie.');
+          Homey.app.debug('Logged in again to refresh cookie.');
           this.api.getBootstrapInfo()
             .then(() => {
               this.log('Bootstrap loaded.');
@@ -175,18 +174,6 @@ class UniFiProtect extends Homey.App {
     }.bind(this);
     setTimeout(timeOutFunction, 2700000);
   }
-
-  _waitForBootstrap() {
-    if (typeof Homey.app.api._lastUpdateId !== 'undefined' && Homey.app.api._lastUpdateId !== null) {
-      Homey.app.debug('Called waitForBootstrap');
-      Homey.app.api.ws.launchUpdatesListener();
-      Homey.app.api.ws.configureUpdatesListener();
-    } else {
-      Homey.app.debug('Calling waitForBootstrap');
-      setTimeout(this._waitForBootstrap.bind(this), 250);
-    }
-  }
-
 
   debug(message) {
     if (Homey.env.DEBUG === 'true') {

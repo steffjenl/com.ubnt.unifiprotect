@@ -6,8 +6,8 @@
     "en": "Ubiquiti UniFi Protect"
   },
   "description": {
-    "en": "Control Ubiquiti UniFi Protect devices with Homey.",
-    "nl": "Bedien Ubiquiti UniFi Protect apparaten met Homey."
+    "en": "Protect your home with UniFi Protect devices.",
+    "nl": "Bescherm je huis met UniFi Protect apparaten."
   },
   "tags": {
     "en": [
@@ -419,6 +419,16 @@
         "en": "Last motion on",
         "nl": "Laatste beweging om"
       },
+      "getable": true,
+      "setable": false
+    },
+    "last_ring_at": {
+      "type": "number",
+      "title": {
+        "en": "Last ring at",
+        "nl": "Laatste deurbel op"
+      },
+      "uiComponent": null,
       "getable": true,
       "setable": false
     },

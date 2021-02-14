@@ -1,0 +1,10 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Last ring at",
+    "nl": "Laatste deurbel op"
+  },
+  "uiComponent": null,
+  "getable": true,
+  "setable": false
+}

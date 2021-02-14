@@ -18,7 +18,7 @@ Adds support for Ubiquiti UniFi Protect devices in Homey.
 * UniFi® Video Camera G4 series:
 	* UVC-G4-PRO
 	* UVC-G4-BULLET
-  * UVC-G4-DoorBell
+  * UVC-G4-DOORBELL
 
 ## Getting started
 

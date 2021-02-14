@@ -112,6 +112,10 @@ class Camera extends Homey.Device {
       this.addCapability('camera_connection_status');
       Homey.app.debug(`created capability camera_connection_status for ${this.getName()}`);
     }
+    if (!this.hasCapability('last_ring_at')) {
+      this.addCapability('last_ring_at');
+      Homey.app.debug(`created capability last_ring_at for ${this.getName()}`);
+    }
   }
 
   _onSnapshotBuffer(camera, width) {
@@ -241,9 +245,22 @@ class Camera extends Homey.Device {
   }
 
   onDoorbellRinging(lastRing) {
-    this._doorbellRingingTrigger.trigger({
-      ufp_ringing_camera: this.getName(),
-    });
+    const lastRingAt = this.getCapabilityValue('last_ring_at');
+
+    if (!lastRingAt) {
+      if (Homey.env.DEBUG) Homey.app.debug(`set last_ring_at to last datetime: ${this.getData().id}`);
+      this.setCapabilityValue('last_ring_at', lastRing)
+        .catch(this.error);
+      return;
+    }
+
+    // Check if the event date is newer
+    if (lastRing > lastRingAt) {
+      this._doorbellRingingTrigger.trigger({
+        ufp_ringing_camera: this.getName(),
+      });
+      Api.setLastRingAt(lastRing);
+    }
   }
 
   onMotionDetectedWS(lastMotionTime, isMotionDetected) {
