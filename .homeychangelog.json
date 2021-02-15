@@ -82,5 +82,8 @@
   },
   "1.2.15": {
     "en": "Removed old firmware code"
+  },
+  "1.2.16": {
+    "en": "Add correct aspect ratio for G4 Doorbell"
   }
 }
