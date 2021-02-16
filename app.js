@@ -79,6 +79,11 @@ class UniFiProtect extends Homey.App {
             this.nvrIp = nvrip;
             this.nvrUsername = credentials.username;
             this.nvrPassword = credentials.password;
+
+            if (Homey.app.api.ws._eventListener == null) {
+              Homey.app.debug('Calling reconnectUpdatesListener');
+              Homey.app.api.ws.reconnectUpdatesListener();
+            }
           })
           .catch(error => this.error(error));
         // _refreshCookie after 45 minutes
@@ -136,12 +141,7 @@ class UniFiProtect extends Homey.App {
         })
         .catch(error => this.error(error));
     }
-    // memory collect every 5 seconds, where is the memory leak?
-    if (global.gc) {
-      global.gc();
-    } else {
-      this.warn('Can\'t find GC hook.....');
-    }
+
     // _refreshCapabilities after 5 second
     const timeOutFunction = function () {
       this._refreshCapabilities();
