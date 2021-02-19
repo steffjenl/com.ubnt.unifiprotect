@@ -143,9 +143,6 @@ class ProtectWebSocket {
 
     // Configure the realtime update events API listener to trigger events on accessories, like motion.
     configureUpdatesListener() {
-
-        this._counter++;
-
         // Only configure the event listener if it exists and it's not already configured.
         if (!this._eventListener || this._eventListenerConfigured) {
             return true;
