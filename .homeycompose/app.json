@@ -1,6 +1,6 @@
 {
   "id": "com.ubnt.unifiprotect",
-  "sdk": 2,
+  "sdk": 3,
   "name": {
     "en": "Ubiquiti UniFi Protect"
   },
@@ -38,7 +38,7 @@
     "video"
   ],
   "version": "1.2.17",
-  "compatibility": ">=4.2.0",
+  "compatibility": ">=5.0.0",
   "author": {
     "name": "Stèphan Eizinga",
     "email": "stephan@monkeysoft.nl"

@@ -1,24 +1,25 @@
-// eslint-disable-next-line node/no-unpublished-require,strict
+'use strict';
+
 const Homey = require('homey');
 
-class CameraDriver extends Homey.Driver {
-  onInit() {
-    this.api = Homey.app.api;
-    this.cameras = {};
-
-    Homey.app.debug('Camera driver initialized.');
+class UniFiCameraDriver extends Homey.Driver {
+  /**
+   * onInit is called when the driver is initialized.
+   */
+  async onInit() {
+    Homey.app.debug('UnifiCamera Driver has been initialized');
   }
 
   onPair(socket) {
     // Validate NVR IP address
     socket.on('validate', (data, callback) => {
-      const nvrip = Homey.ManagerSettings.get('ufp:nvrip');
+      const nvrip = this.homey.settings.get('ufp:nvrip');
       callback(null, nvrip ? 'ok' : 'nok');
     });
 
     // Perform when device list is shown
     socket.on('list_devices', async (data, callback) => {
-      callback(null, Object.values(await this.api.getCameras()).map(camera => {
+      callback(null, Object.values(await Homey.app.protectapi.getCameras()).map(camera => {
         return {
           data: { id: String(camera.id) },
           name: camera.name,
@@ -27,8 +28,7 @@ class CameraDriver extends Homey.Driver {
     });
   }
 
-  getDeviceById(camera)
-  {
+  getDeviceById(camera) {
     const device = this.getDevice({
       id: camera,
     });
@@ -36,39 +36,40 @@ class CameraDriver extends Homey.Driver {
     return device;
   }
 
-  onParseWebsocketMotionData(device, lastMotion, isMotionDetected)
-  {
-    Homey.app.debug("Lastmotion from Websockets " + lastMotion);
-    if (Object.prototype.hasOwnProperty.call(device, '_events')) {
-      device.onMotionDetectedWS(lastMotion, isMotionDetected);
-    }
-  }
-  onParseWebsocketLastRingData(device, lastRing)
-  {
-    if (Object.prototype.hasOwnProperty.call(device, '_events')) {
-      device.onDoorbellRinging(lastRing);
-    }
-  }
+  onParseWesocketMessage(camera, payload) {
+    // Debug information about playload
+    Homey.app.debug(JSON.stringify(payload));
 
-  onParseTriggerCameraEvents(cameraEvent) {
-    const device = this.getDevice({
-      id: cameraEvent.camera,
-    });
+    if (Object.prototype.hasOwnProperty.call(camera, '_events')) {
+      if (payload.hasOwnProperty('isRecording')) {
+        camera.onIsRecording(payload.isRecording);
+      }
 
-    if (Object.prototype.hasOwnProperty.call(device, '_events')) {
-      device.onRefreshMotionData(cameraEvent.start, cameraEvent.end, cameraEvent.thumbnail, cameraEvent.heatmap, cameraEvent.score);
-    }
-  }
+      if (payload.hasOwnProperty('isMicEnabled')) {
+        camera.onIsMicEnabled(payload.isMicEnabled);
+      }
 
-  onParseTriggerCameraData(cameraData) {
-    const device = this.getDevice({
-      id: cameraData.id,
-    });
+      if (payload.hasOwnProperty('micVolume')) {
+        camera.onMicVolume(payload.micVolume);
+      }
 
-    if (Object.prototype.hasOwnProperty.call(device, '_events')) {
-      device.onRefreshCamera(cameraData);
+      if (payload.hasOwnProperty('isConnected')) {
+        camera.onIsConnected(payload.isConnected);
+      }
+
+      if (payload.hasOwnProperty('recordingSettings') && payload.recordingSettings.hasOwnProperty('mode')) {
+        camera.onRecordingMode(payload.recordingSettings.mode);
+      }
+
+      if (payload.lastMotion) {
+        camera.onMotionDetected(payload.lastMotion, payload.isMotionDetected);
+      }
+
+      if (payload.lastRing) {
+        camera.onDoorbellRinging(payload.lastRing);
+      }
     }
   }
 }
 
-module.exports = CameraDriver;
+module.exports = UniFiCameraDriver;
