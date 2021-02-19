@@ -86,14 +86,16 @@ class UniFiProtect extends Homey.App {
                         this.nvrPort = nvrport;
                         this.nvrUsername = credentials.username;
                         this.nvrPassword = credentials.password;
+
+                        // _refreshCookie after 45 minutes
+                        const timeOutFunction = function () {
+                            this._refreshCookie();
+                        }.bind(this);
+                        setTimeout(timeOutFunction, RefreshCookieTime);
+
+                        Homey.app.debug('Logged in.');
                     })
                     .catch(error => this.error(error));
-                // _refreshCookie after 45 minutes
-                const timeOutFunction = function () {
-                    this._refreshCookie();
-                }.bind(this);
-                setTimeout(timeOutFunction, RefreshCookieTime);
-                Homey.app.debug('Logged in.');
             })
             .catch(error => this.error(error));
     }

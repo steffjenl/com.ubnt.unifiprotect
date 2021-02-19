@@ -50,7 +50,7 @@ class ProtectAPI {
     }
 
     login(host, port, username, password) {
-        Homey.app.debug('Logging in with proxy.');
+        Homey.app.debug('Logging in...');
         UFV_API_ENDPOINT = '/proxy/protect/api';
 
         this.webclient.setServerHost(host);
@@ -108,7 +108,7 @@ class ProtectAPI {
                     // Connected
                     Homey.ManagerApi.realtime(UfvConstants.EVENT_SETTINGS_STATUS, 'Connected');
                     //
-                    return resolve('Logged in with proxy.');
+                    return resolve('Logged in...');
                 });
             });
 

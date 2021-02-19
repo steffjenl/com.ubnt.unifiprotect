@@ -7,6 +7,9 @@ const UfvConstants = require('./constants');
 
 const ManagerApi = Homey.ManagerApi;
 
+// 15000 miliseconds is 0.25 minute
+const SendPingPongMessageTime = 15000;
+
 class ProtectWebSocket {
     constructor() {
         this._eventListener = null;
@@ -43,7 +46,7 @@ class ProtectWebSocket {
 
             if (!_ws) {
                 Homey.app.debug('Unable to connect to the realtime update events API. Will retry again later.');
-                this._eventListener = null;
+                delete this._eventListener;
                 this._eventListenerConfigured = false;
                 return false;
             }
@@ -52,7 +55,7 @@ class ProtectWebSocket {
 
             this._pingPong = setInterval(() => {
                 this.sendPingPongMessage();
-            }, 15000);
+            }, SendPingPongMessageTime);
 
             // Received pong
             this._eventListener.on('pong', (event) => {

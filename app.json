@@ -1,12 +1,9 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
-  "_id": "com.ubnt.unifiprotect",
-  "id": "com.ubnt.cloudkey",
+  "id": "com.ubnt.unifiprotect",
   "sdk": 2,
-  "version": "1.2.17",
-  "compatibility": ">=4.2.0",
   "name": {
-    "en": "Ubiquiti UniFi Cloudkey"
+    "en": "Ubiquiti UniFi Protect"
   },
   "description": {
     "en": "Protect your home with UniFi Protect devices.",
@@ -41,6 +38,8 @@
     "security",
     "video"
   ],
+  "version": "1.2.17",
+  "compatibility": ">=4.2.0",
   "author": {
     "name": "Stèphan Eizinga",
     "email": "stephan@monkeysoft.nl"
@@ -50,10 +49,6 @@
       {
         "name": "Stèphan Eizinga",
         "email": "stephan@monkeysoft.nl"
-      },
-      {
-        "name": "Jeroen Brosens",
-        "email": "j.brosens+unifiprotect@gmail.com"
       }
     ]
   },
@@ -246,19 +241,19 @@
   },
   "drivers": [
     {
-      "id": "unifi-camera",
-      "name": {
-        "en": "UniFi Camera"
-      },
+      "id": "protectcamera",
       "class": "camera",
       "capabilities": [
         "alarm_motion",
         "camera_recording_status",
         "last_motion_at"
       ],
+      "name": {
+        "en": "Camera"
+      },
       "images": {
-        "large": "/drivers/unifi-camera/assets/images/large.png",
-        "small": "/drivers/unifi-camera/assets/images/small.png"
+        "large": "drivers/protectcamera/assets/images/large.png",
+        "small": "drivers/protectcamera/assets/images/small.png"
       },
       "pair": [
         {
