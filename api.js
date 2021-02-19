@@ -1,21 +1,19 @@
-// eslint-disable-next-line node/no-unpublished-require,strict
+'use strict';
+
 const Homey = require('homey');
 
 module.exports = [
-  {
-    method: 'POST',
-    path: '/settings/validate',
-    fn(args, callback) {
-      const Api = Homey.app.api;
-      const jsonData = args.body;
-      Api.setApiPort(jsonData.port);
-      Api.loginProxy(jsonData.hostname, jsonData.username, jsonData.password)
-        .then(result => {
-          return callback(null, result);
-        })
-        .catch(error => {
-          callback(error);
-        });
+    {
+        method: 'POST',
+        path: '/settings/validate',
+        fn(args, callback) {
+            Homey.app.api.login(args.body.hostname, args.body.port, args.body.username, args.body.password)
+                .then(result => {
+                    return callback(null, result);
+                })
+                .catch(error => {
+                    callback(error);
+                });
+        },
     },
-  },
 ];

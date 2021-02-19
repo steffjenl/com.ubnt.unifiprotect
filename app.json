@@ -1,9 +1,12 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
-  "id": "com.ubnt.unifiprotect",
+  "_id": "com.ubnt.unifiprotect",
+  "id": "com.ubnt.cloudkey",
   "sdk": 2,
+  "version": "1.2.17",
+  "compatibility": ">=4.2.0",
   "name": {
-    "en": "Ubiquiti UniFi Protect"
+    "en": "Ubiquiti UniFi Cloudkey"
   },
   "description": {
     "en": "Protect your home with UniFi Protect devices.",
@@ -38,8 +41,6 @@
     "security",
     "video"
   ],
-  "version": "1.2.17",
-  "compatibility": ">=4.2.0",
   "author": {
     "name": "Stèphan Eizinga",
     "email": "stephan@monkeysoft.nl"
@@ -245,52 +246,19 @@
   },
   "drivers": [
     {
-      "id": "protectcamera",
+      "id": "unifi-camera",
+      "name": {
+        "en": "UniFi Camera"
+      },
       "class": "camera",
       "capabilities": [
         "alarm_motion",
         "camera_recording_status",
         "last_motion_at"
       ],
-      "name": {
-        "en": "Camera"
-      },
       "images": {
-        "large": "drivers/protectcamera/assets/images/large.png",
-        "small": "drivers/protectcamera/assets/images/small.png"
-      },
-      "pair": [
-        {
-          "id": "validate"
-        },
-        {
-          "id": "list_devices",
-          "template": "list_devices",
-          "navigation": {
-            "next": "add_devices"
-          }
-        },
-        {
-          "id": "add_devices",
-          "template": "add_devices"
-        }
-      ]
-    },
-    {
-      "id": "unifiprotect",
-      "deprecated": true,
-      "class": "other",
-      "capabilities": [
-        "nvr_disk_used",
-        "nvr_disk_size",
-        "nvr_disk_size_used"
-      ],
-      "name": {
-        "en": "UniFi Protect Controller"
-      },
-      "images": {
-        "large": "drivers/unifiprotect/assets/images/large.png",
-        "small": "drivers/unifiprotect/assets/images/small.png"
+        "large": "/drivers/unifi-camera/assets/images/large.png",
+        "small": "/drivers/unifi-camera/assets/images/small.png"
       },
       "pair": [
         {

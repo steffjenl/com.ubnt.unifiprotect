@@ -1,39 +1,13 @@
 {
-  "name": "com.ubnt.unifiprotect",
-  "version": "1.2.6",
-  "description": "Adds support for UniFi Protect devices.",
+  "name": "com.ubnt.cloudkey",
+  "version": "1.0.0",
   "main": "app.js",
-  "directories": {
-    "lib": "lib"
+  "devDependencies": {
+    "homey": "^2.9.7"
   },
   "dependencies": {
-    "node-fetch": "^2.6.0",
-    "ws": "^7.4.1",
+    "node-fetch": "^2.6.1",
+    "ws": "^7.4.3",
     "zlib": "^1.0.5"
-  },
-  "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "engines": {
-    "node": ">=8.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/steffjenl/com.ubnt.unifiprotect.git"
-  },
-  "keywords": [
-    "unifi",
-    "video",
-    "protect",
-    "camera",
-    "security",
-    "motion"
-  ],
-  "author": "Stèphan Eizinga",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/steffjenl/com.ubnt.unifiprotect/issues"
-  },
-  "homepage": "https://github.com/steffjenl/com.ubnt.unifiprotect#readme"
+  }
 }
