@@ -123,7 +123,7 @@ class UniFiProtect extends Homey.App {
         setTimeout(timeOutFunction, RefreshCookieTime);
     }
 
-    debug(message) {
+    debug() {
         const args = Array.prototype.slice.call(arguments);
         args.unshift('[debug]');
 
