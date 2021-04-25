@@ -28,19 +28,20 @@ class UniFiCameraDriver extends Homey.Driver {
     });
   }
 
-  getDeviceById(camera) {
-    const device = this.getDevice({
-      id: camera,
-    });
-
-    return device;
-  }
+  // getDeviceById(camera) {
+  //   const device = this.getDevice({
+  //     id: camera,
+  //   });
+  //
+  //   return device;
+  // }
 
   onParseWesocketMessage(camera, payload) {
     // Debug information about playload
     Homey.app.debug(JSON.stringify(payload));
 
     if (Object.prototype.hasOwnProperty.call(camera, '_events')) {
+      Homey.app.debug(JSON.stringify(payload));
       if (payload.hasOwnProperty('isRecording')) {
         camera.onIsRecording(payload.isRecording);
       }
@@ -67,6 +68,10 @@ class UniFiCameraDriver extends Homey.Driver {
 
       if (payload.lastRing) {
         camera.onDoorbellRinging(payload.lastRing);
+      }
+
+      if (payload.hasOwnProperty('isDark')) {
+        camera.onIsDark(payload.isDark);
       }
     }
   }

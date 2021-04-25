@@ -11,6 +11,7 @@ class ProtectWebClient {
         this._serverPort = null;
         this._cookieToken = null;
         this._apiKey = null;
+        this._csrfToken = null;
     }
 
     setServerHost(hostName) {
@@ -45,6 +46,14 @@ class ProtectWebClient {
         return this._apiKey;
     }
 
+    getCSRFToken() {
+        return this._csrfToken;
+    }
+
+    setCSRFToken(csrfToken) {
+        this._csrfToken = csrfToken;
+    }
+
     get(resource, params = {}, isBinary = false) {
         return new Promise((resolve, reject) => {
             if (!this._serverHost) reject(new Error('Invalid host.'));
@@ -57,7 +66,7 @@ class ProtectWebClient {
                 method: 'GET',
                 hostname: this._serverHost,
                 port: this._serverPort,
-                path: `${UFV_API_ENDPOINT}/${resource}`,
+                path: `${UFV_API_ENDPOINT}/${resource}${this.toQueryString(params)}`,
                 headers: {
                     'Content-Type': 'application/json; charset=utf-8',
                     Accept: isBinary ? '*/*' : 'application/json',
@@ -65,7 +74,7 @@ class ProtectWebClient {
                 },
                 maxRedirects: 20,
                 rejectUnauthorized: false,
-                keepAlive: false,
+                keepAlive: true,
             };
 
             const req = https.request(options, res => {
@@ -80,6 +89,10 @@ class ProtectWebClient {
                     res.rawHeaders.forEach((item, index) => {
                         if (item.toLowerCase() === 'set-cookie') {
                             this._cookieToken = res.rawHeaders[index + 1];
+                        }
+
+                        if (item.toLowerCase() === 'x-csrf-token') {
+                            //this._csrfToken = res.rawHeaders[index + 1];
                         }
                     });
 
@@ -114,13 +127,14 @@ class ProtectWebClient {
                 method: 'PUT',
                 headers: {
                     Accept: 'application/json',
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json; charset=utf-8',
                     'Content-Length': Buffer.byteLength(body),
                     'Cookie': this._cookieToken,
+                    'x-csrf-token': this._csrfToken,
                 },
                 maxRedirects: 20,
                 rejectUnauthorized: false,
-                keepAlive: false,
+                keepAlive: true,
             };
 
             const req = https.request(options, res => {
@@ -136,6 +150,10 @@ class ProtectWebClient {
                     res.rawHeaders.forEach((item, index) => {
                         if (item.toLowerCase() === 'set-cookie') {
                             this._cookieToken = res.rawHeaders[index + 1];
+                        }
+
+                        if (item.toLowerCase() === 'x-csrf-token') {
+                            //this._csrfToken = res.rawHeaders[index + 1];
                         }
                     });
 
@@ -163,18 +181,19 @@ class ProtectWebClient {
                 method: 'PATCH',
                 headers: {
                     Accept: 'application/json',
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json; charset=utf-8',
                     'Content-Length': Buffer.byteLength(body),
                     'Cookie': this._cookieToken,
+                    'x-csrf-token': this._csrfToken,
                 },
                 maxRedirects: 20,
                 rejectUnauthorized: false,
-                keepAlive: false,
+                keepAlive: true,
             };
 
             const req = https.request(options, res => {
                 if (res.statusCode !== 200) {
-                    return reject(new Error(`Failed to PATCH to url: ${options.host}${options.path} (status code: ${res.statusCode})`));
+                    return reject(new Error(`Failed to PATCH url: ${options.path} (status code: ${res.statusCode})`));
                 }
                 res.setEncoding('utf8');
                 const data = [];
@@ -185,6 +204,10 @@ class ProtectWebClient {
                     res.rawHeaders.forEach((item, index) => {
                         if (item.toLowerCase() === 'set-cookie') {
                             this._cookieToken = res.rawHeaders[index + 1];
+                        }
+
+                        if (item.toLowerCase() === 'x-csrf-token') {
+                            //this._csrfToken = res.rawHeaders[index + 1];
                         }
                     });
 
@@ -212,13 +235,14 @@ class ProtectWebClient {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json; charset=utf-8',
                     'Content-Length': Buffer.byteLength(body),
                     'Cookie': this._cookieToken,
+                    'x-csrf-token': this._csrfToken,
                 },
                 maxRedirects: 20,
                 rejectUnauthorized: false,
-                keepAlive: false,
+                keepAlive: true,
             };
 
             const req = https.request(options, res => {
@@ -234,6 +258,10 @@ class ProtectWebClient {
                     res.rawHeaders.forEach((item, index) => {
                         if (item.toLowerCase() === 'set-cookie') {
                             this._cookieToken = res.rawHeaders[index + 1];
+                        }
+
+                        if (item.toLowerCase() === 'x-csrf-token') {
+                            //this._csrfToken = res.rawHeaders[index + 1];
                         }
                     });
 

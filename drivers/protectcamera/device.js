@@ -51,6 +51,7 @@ class Camera extends Homey.Device {
 
   async initCamera() {
     this.camera = this.getData();
+    this.device = this;
 
     // Snapshot trigger
     this._snapshotTrigger = new Homey.FlowCardTrigger(UfvConstants.EVENT_SNAPSHOT_CREATED);
@@ -67,9 +68,11 @@ class Camera extends Homey.Device {
     // Action 'take snapshot'
     new Homey.FlowCardAction(UfvConstants.ACTION_TAKE_SNAPSHOT)
         .register()
-        .registerRunListener((args, state) => { // eslint-disable-line no-unused-vars
-          this._onSnapshotBuffer(this.camera, args.width)
-              .catch(this.error.bind(this, 'Could not take snapshot.'));
+        .registerRunListener((args, state) => {
+          if (typeof args.device.getData().id !== 'undefined') {
+            this._onSnapshotBuffer(args.device.getData(), args.width)
+                .catch(this.error.bind(this, 'Could not take snapshot.'));
+          }
 
           return Promise.resolve(true);
         });
@@ -77,10 +80,12 @@ class Camera extends Homey.Device {
     // Action 'set recording mode'
     new Homey.FlowCardAction(UfvConstants.ACTION_SET_RECORDING_MODE)
         .register()
-        .registerRunListener((args, state) => { // eslint-disable-line no-unused-vars
-          Homey.app.api.setRecordingMode(this.camera, args.recording_mode)
-              .then(Homey.app.debug.bind(this, '[recordingmode.set]'))
-              .catch(this.error.bind(this, '[recordingmode.set]'));
+        .registerRunListener((args, state) => {
+          if (typeof args.device.getData().id !== 'undefined') {
+            Homey.app.api.setRecordingMode(args.device.getData(), args.recording_mode)
+                .then(Homey.app.debug.bind(this, '[recordingmode.set]'))
+                .catch(this.error.bind(this, '[recordingmode.set]'));
+          }
 
           return Promise.resolve(true);
         });
@@ -108,6 +113,12 @@ class Camera extends Homey.Device {
     if (this.getClass() !== 'camera') {
       Homey.app.debug(`changed class to camera for ${this.getName()}`);
       this.setClass('camera');
+    }
+
+    // camera_nightvision_status
+    if (!this.hasCapability('camera_nightvision_status')) {
+      this.addCapability('camera_nightvision_status');
+      Homey.app.debug(`created capability camera_nightvision_status for ${this.getName()}`);
     }
 
     if (!this.hasCapability('last_motion_score')) {
@@ -175,6 +186,9 @@ class Camera extends Homey.Device {
           if (this.hasCapability('camera_microphone_status')) {
             this.setCapabilityValue('camera_microphone_status', camera.isMicEnabled);
           }
+          if (this.hasCapability('camera_nightvision_status')) {
+            this.setCapabilityValue('camera_nightvision_status', camera.isDark);
+          }
           if (this.hasCapability('camera_microphone_volume')) {
             this.setCapabilityValue('camera_microphone_volume', camera.micVolume);
           }
@@ -198,6 +212,14 @@ class Camera extends Homey.Device {
   onMotionEnd() {
     Homey.app.debug('onMotionEnd');
     this.setCapabilityValue('alarm_motion', false);
+  }
+
+  onIsDark(isDark) {
+    // Debug information about playload
+    Homey.app.debug(JSON.stringify(isDark));
+    if (this.hasCapability('camera_nightvision_status')) {
+      this.setCapabilityValue('camera_nightvision_status', isDark);
+    }
   }
 
   onDoorbellRinging(lastRing) {

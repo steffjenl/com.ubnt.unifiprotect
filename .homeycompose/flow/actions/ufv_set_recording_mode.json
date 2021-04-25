@@ -8,7 +8,9 @@
     {
       "name": "device",
       "type": "device",
-      "filter": "driver_id=protectcamera"
+      "filter": {
+        "driver_id": "protectcamera"
+      }
     },
     {
       "name": "recording_mode",

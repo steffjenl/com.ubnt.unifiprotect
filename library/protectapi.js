@@ -49,6 +49,67 @@ class ProtectAPI {
 
     }
 
+    getCSRFToken(host, port) {
+        Homey.app.debug('Get CSRF Token...');
+
+        return new Promise((resolve, reject) => {
+            Homey.ManagerApi.realtime(UfvConstants.EVENT_SETTINGS_STATUS, 'Getting CSRF token');
+
+            if (!host) reject(new Error('Invalid host.'));
+
+            const options = {
+                method: 'GET',
+                hostname: host,
+                port: port,
+                path: '/',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                    Accept: '*/*',
+                    'x-csrf-token': 'undefined'
+                },
+                maxRedirects: 20,
+                rejectUnauthorized: false,
+                timeout: 2000,
+                keepAlive: true,
+            };
+
+            const req = https.request(options, res => {
+                const body = [];
+
+                res.on('data', chunk => body.push(chunk));
+                res.on('end', () => {
+                    // Obtain authorization header
+                    res.rawHeaders.forEach((item, index) => {
+                        if (item.toLowerCase() === 'set-cookie') {
+                            this.webclient.setCookieToken(res.rawHeaders[index + 1]);
+                        }
+
+                        // X-CSRF-Token
+                        if (item.toLowerCase() === 'x-csrf-token') {
+                            this.webclient.setCSRFToken(res.rawHeaders[index + 1]);
+                        }
+                    });
+
+                    if (this.webclient.getCSRFToken() === null) {
+                        reject(new Error('Invalid x-csrf-token header.'));
+                        return;
+                    }
+
+                    // Connected
+                    Homey.ManagerApi.realtime(UfvConstants.EVENT_SETTINGS_STATUS, 'CSRF Token found');
+                    //
+                    return resolve('We got it!');
+                });
+            });
+
+            req.on('error', error => {
+                Homey.ManagerApi.realtime(UfvConstants.EVENT_SETTINGS_STATUS, 'Disconnected');
+                return reject(error);
+            });
+            req.end();
+        });
+    }
+
     login(host, port, username, password) {
         Homey.app.debug('Logging in...');
         UFV_API_ENDPOINT = '/proxy/protect/api';
@@ -57,68 +118,79 @@ class ProtectAPI {
         this.webclient.setServerPort(port);
 
         return new Promise((resolve, reject) => {
-            Homey.ManagerApi.realtime(UfvConstants.EVENT_SETTINGS_STATUS, 'Connecting');
 
-            if (!host) reject(new Error('Invalid host.'));
-            if (!username) reject(new Error('Invalid username.'));
-            if (!password) reject(new Error('Invalid password.'));
+        this.getCSRFToken(host, port).then(response => {
 
-            const credentials = JSON.stringify({
-                username,
-                password,
-            });
+                Homey.ManagerApi.realtime(UfvConstants.EVENT_SETTINGS_STATUS, 'Connecting');
 
-            const options = {
-                method: 'POST',
-                hostname: host,
-                port: port,
-                path: '/api/auth/login',
-                headers: {
-                    'Content-Type': 'application/json; charset=utf-8',
-                    Accept: 'application/json',
-                },
-                maxRedirects: 20,
-                rejectUnauthorized: false,
-                timeout: 2000,
-                keepAlive: false,
-            };
+                if (!host) reject(new Error('Invalid host.'));
+                if (!username) reject(new Error('Invalid username.'));
+                if (!password) reject(new Error('Invalid password.'));
 
-            const req = https.request(options, res => {
-                if (res.statusCode !== 200) {
-                    return reject(new Error(`Request failed: ${options.path} (status code: ${res.statusCode}) (creds: ${credentials}`));
-                }
-                const body = [];
-
-                res.on('data', chunk => body.push(chunk));
-                res.on('end', () => {
-                    const json = JSON.parse(body);
-
-                    // Obtain authorization header
-                    res.rawHeaders.forEach((item, index) => {
-                        if (item.toLowerCase() === 'set-cookie') {
-                            this.webclient.setCookieToken(res.rawHeaders[index + 1]);
-                        }
-                    });
-
-                    if (this.webclient.getCookieToken() === null) {
-                        reject(new Error('Invalid set-cookie header.'));
-                        return;
-                    }
-
-                    // Connected
-                    Homey.ManagerApi.realtime(UfvConstants.EVENT_SETTINGS_STATUS, 'Connected');
-                    //
-                    return resolve('Logged in...');
+                const credentials = JSON.stringify({
+                    username,
+                    password,
                 });
-            });
 
-            req.on('error', error => {
-                Homey.ManagerApi.realtime(UfvConstants.EVENT_SETTINGS_STATUS, 'Disconnected');
-                return reject(error);
-            });
+                const options = {
+                    method: 'POST',
+                    hostname: host,
+                    port: port,
+                    path: '/api/auth/login',
+                    headers: {
+                        'Content-Type': 'application/json; charset=utf-8',
+                        Accept: 'application/json',
+                        'x-csrf-token': this.webclient.getCSRFToken(),
+                    },
+                    maxRedirects: 20,
+                    rejectUnauthorized: false,
+                    timeout: 2000,
+                    keepAlive: true,
+                };
 
-            req.write(credentials);
-            req.end();
+                const req = https.request(options, res => {
+                    if (res.statusCode !== 200) {
+                        return reject(new Error(`Request failed: ${options.path} (status code: ${res.statusCode}) (creds: ${credentials}`));
+                    }
+                    const body = [];
+
+                    res.on('data', chunk => body.push(chunk));
+                    res.on('end', () => {
+                        const json = JSON.parse(body);
+
+                        // Obtain authorization header
+                        res.rawHeaders.forEach((item, index) => {
+                            if (item.toLowerCase() === 'set-cookie') {
+                                this.webclient.setCookieToken(res.rawHeaders[index + 1]);
+                            }
+
+                            // X-CSRF-Token
+                            if (item.toLowerCase() === 'x-csrf-token') {
+                                this.webclient.setCSRFToken(res.rawHeaders[index + 1]);
+                            }
+                        });
+
+                        if (this.webclient.getCookieToken() === null) {
+                            reject(new Error('Invalid set-cookie header.'));
+                            return;
+                        }
+
+                        // Connected
+                        Homey.ManagerApi.realtime(UfvConstants.EVENT_SETTINGS_STATUS, 'Connected');
+                        //
+                        return resolve('Logged in...');
+                    });
+                });
+
+                req.on('error', error => {
+                    Homey.ManagerApi.realtime(UfvConstants.EVENT_SETTINGS_STATUS, 'Disconnected');
+                    return reject(error);
+                });
+
+                req.write(credentials);
+                req.end();
+
+        }).catch(error => reject(error));
         });
     }
 
@@ -271,11 +343,17 @@ class ProtectAPI {
             this.findCameraById(camera.id)
                 .then(cameraInfo => {
                     const recordingSettings = cameraInfo.recordingSettings;
+                    const channels = cameraInfo.channels;
+                    const smartDetectSettings = cameraInfo.smartDetectSettings;
+
                     recordingSettings.mode = mode;
 
                     const params = {
+                        channels,
                         recordingSettings,
+                        smartDetectSettings,
                     };
+
                     return this.webclient.patch(`cameras/${camera.id}`, params)
                         .then(() => resolve('Recording mode successfully set.'))
                         .catch(error => reject(new Error(`Error setting recording mode: ${error}`)));
