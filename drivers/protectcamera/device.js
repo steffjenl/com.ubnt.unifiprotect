@@ -238,18 +238,18 @@ class Camera extends Homey.Device {
   onDoorbellRinging(lastRing) {
     const lastRingAt = this.getCapabilityValue('last_ring_at');
 
+    // Check if the event date is newer
+    if (!lastRingAt || lastRing > lastRingAt) {
+      this._doorbellRingingTrigger.trigger({
+        ufp_ringing_camera: this.getName(),
+      });
+    }
+
     if (!lastRingAt) {
       if (Homey.env.DEBUG) Homey.app.debug(`set last_ring_at to last datetime: ${this.getData().id}`);
       this.setCapabilityValue('last_ring_at', lastRing)
           .catch(this.error);
       return;
-    }
-
-    // Check if the event date is newer
-    if (lastRing > lastRingAt) {
-      this._doorbellRingingTrigger.trigger({
-        ufp_ringing_camera: this.getName(),
-      });
     }
   }
 
