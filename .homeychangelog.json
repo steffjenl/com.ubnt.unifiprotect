@@ -7,5 +7,8 @@
   },
   "1.3.2": {
     "en": "Fix recording flow"
+  },
+  "1.3.3": {
+    "en": "Add support for smart detections and fix some bugs"
   }
 }
