@@ -118,6 +118,51 @@
         ]
       },
       {
+        "id": "ufp_smart_detection",
+        "title": {
+          "en": "A smart detection event",
+          "nl": "Een slim detectie event"
+        },
+        "tokens": [
+          {
+            "name": "ufp_smart_detection_camera",
+            "type": "string",
+            "title": {
+              "en": "Camera",
+              "nl": "Camera"
+            },
+            "example": {
+              "en": "Doorbell",
+              "nl": "Deurbel"
+            }
+          },
+          {
+            "name": "smart_detection_type",
+            "type": "string",
+            "title": {
+              "en": "Smart detection type",
+              "nl": "Slim detectie type"
+            },
+            "example": {
+              "en": "vehicle",
+              "nl": "vehicle"
+            }
+          },
+          {
+            "name": "score",
+            "type": "number",
+            "title": {
+              "en": "Score",
+              "nl": "Score"
+            },
+            "example": {
+              "en": "62",
+              "nl": "62"
+            }
+          }
+        ]
+      },
+      {
         "id": "ufv_snapshot_created",
         "title": {
           "en": "A snapshot was created",
@@ -250,7 +295,8 @@
       "capabilities": [
         "alarm_motion",
         "camera_recording_status",
-        "last_motion_at"
+        "last_motion_at",
+        "last_smart_detection_at"
       ],
       "name": {
         "en": "Camera"
@@ -406,6 +452,26 @@
       "title": {
         "en": "Last ring at",
         "nl": "Laatste deurbel op"
+      },
+      "uiComponent": null,
+      "getable": true,
+      "setable": false
+    },
+    "last_smart_detection_at": {
+      "type": "number",
+      "title": {
+        "en": "Last smart detection at",
+        "nl": "Laatste slimme detectie op"
+      },
+      "uiComponent": null,
+      "getable": true,
+      "setable": false
+    },
+    "last_smart_detection_score": {
+      "type": "number",
+      "title": {
+        "en": "Last smart detection score",
+        "nl": "Laatste slimme detectie score"
       },
       "uiComponent": null,
       "getable": true,
