@@ -345,14 +345,17 @@ class ProtectAPI {
                     const recordingSettings = cameraInfo.recordingSettings;
                     const channels = cameraInfo.channels;
                     const smartDetectSettings = cameraInfo.smartDetectSettings;
-
                     recordingSettings.mode = mode;
 
                     const params = {
                         channels,
-                        recordingSettings,
-                        smartDetectSettings,
+                        recordingSettings
                     };
+
+                    // Only add smartDetectSettings when the camera supports it
+                    if (cameraInfo.featureFlags.hasSmartDetect) {
+                        params['smartDetectSettings'] = smartDetectSettings;
+                    }
 
                     return this.webclient.patch(`cameras/${camera.id}`, params)
                         .then(() => resolve('Recording mode successfully set.'))
