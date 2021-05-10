@@ -4,7 +4,8 @@
   "capabilities": [
     "alarm_motion",
     "camera_recording_status",
-    "last_motion_at"
+    "last_motion_at",
+    "last_smart_detection_at"
   ],
   "name": {
     "en": "Camera"

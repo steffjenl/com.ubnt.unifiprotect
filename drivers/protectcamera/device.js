@@ -61,9 +61,13 @@ class Camera extends Homey.Device {
     this._connectionStatusTrigger = new Homey.FlowCardTrigger(UfvConstants.EVENT_CONNECTION_CHANGED);
     this._connectionStatusTrigger.register();
 
-    // Connection Status trigger
+    // Doorbell ringing trigger
     this._doorbellRingingTrigger = new Homey.FlowCardTrigger(UfvConstants.EVENT_DOORBELL_RINGING);
     this._doorbellRingingTrigger.register();
+
+    // Smart detection trigger
+    this._smartDetectionTrigger = new Homey.FlowCardTrigger(UfvConstants.EVENT_SMART_DETECTION);
+    this._smartDetectionTrigger.register();
 
     // Action 'take snapshot'
     new Homey.FlowCardAction(UfvConstants.ACTION_TAKE_SNAPSHOT)
@@ -166,6 +170,15 @@ class Camera extends Homey.Device {
       this.addCapability('last_ring_at');
       Homey.app.debug(`created capability last_ring_at for ${this.getName()}`);
     }
+    if (!this.hasCapability('last_smart_detection_at')) {
+      this.addCapability('last_smart_detection_at');
+      Homey.app.debug(`created capability last_smart_detection_at for ${this.getName()}`);
+    }
+    if (!this.hasCapability('last_smart_detection_score')) {
+      this.addCapability('last_smart_detection_score');
+      Homey.app.debug(`created capability last_smart_detection_score for ${this.getName()}`);
+    }
+
   }
 
   async _initCameraData() {
@@ -268,6 +281,24 @@ class Camera extends Homey.Device {
       this.onMotionEnd();
       this.setCapabilityValue('last_motion_at', lastMotionTime)
           .catch(this.error);
+    }
+  }
+
+  onSmartDetection(lastDetectionAt, smartDetectTypes, score) {
+    // Set last smart detection to current datetime
+    this.setCapabilityValue('last_smart_detection_at', lastDetectionAt)
+        .catch(this.error);
+    this.setCapabilityValue('last_smart_detection_score', score)
+        .catch(this.error);
+
+    // fire trigger (per detection type)
+    for (let smartDetectionType of smartDetectTypes) {
+      Homey.app.debug(`smart detection event on camera ${this.getData().id}, with type ${smartDetectionType}`);
+      this._smartDetectionTrigger.trigger({
+        ufp_smart_detection_camera: this.getName(),
+        smart_detection_type: smartDetectionType,
+        score: score
+      });
     }
   }
 

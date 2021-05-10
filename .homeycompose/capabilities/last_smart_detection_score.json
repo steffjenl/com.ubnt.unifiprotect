@@ -1,0 +1,10 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Last smart detection score",
+    "nl": "Laatste slimme detectie score"
+  },
+  "uiComponent": null,
+  "getable": true,
+  "setable": false
+}

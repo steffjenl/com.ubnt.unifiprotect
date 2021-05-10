@@ -28,15 +28,15 @@ class UniFiCameraDriver extends Homey.Driver {
     });
   }
 
-  // getDeviceById(camera) {
-  //   const device = this.getDevice({
-  //     id: camera,
-  //   });
-  //
-  //   return device;
-  // }
+  getDeviceById(camera) {
+    const device = this.getDevice({
+      id: camera,
+    });
 
-  onParseWesocketMessage(camera, payload) {
+    return device;
+  }
+
+  onParseWebsocketMessage(camera, payload) {
     // Debug information about playload
     Homey.app.debug(JSON.stringify(payload));
 
@@ -62,11 +62,15 @@ class UniFiCameraDriver extends Homey.Driver {
         camera.onRecordingMode(payload.recordingSettings.mode);
       }
 
-      if (payload.lastMotion) {
+      if (payload.hasOwnProperty('lastMotion')) {
         camera.onMotionDetected(payload.lastMotion, payload.isMotionDetected);
       }
 
-      if (payload.lastRing) {
+      if (payload.hasOwnProperty('smartDetectTypes')) {
+        camera.onSmartDetection(payload.start, payload.smartDetectTypes, payload.score);
+      }
+
+      if (payload.hasOwnProperty('lastRing')) {
         camera.onDoorbellRinging(payload.lastRing);
       }
 

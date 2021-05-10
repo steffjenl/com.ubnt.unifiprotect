@@ -141,6 +141,51 @@ class ProtectWebSocket {
         }
     }
 
+    /**
+     * Update actions that we care about (doorbell rings, motion detection, smart detection)
+     *
+     * Example event:
+     *
+     * {
+     *   action: "update"
+     *   id: "someCameraId"
+     *   modelKey: "camera"
+     *   newUpdateId: "ignorethis"
+     * }
+     *
+     * Example smart detection event
+     *
+     * {
+     *   "action":{
+     *     "action":"add",
+     *     "newUpdateId":"newUpdateId",
+     *     "modelKey":"event",
+     *     "id":"id"
+     *   },
+     *   "payload":{
+     *     "type":"smartDetectZone",
+     *     "score":82,
+     *     "smartDetectTypes":["vehicle"],
+     *     "smartDetectEvents":[],
+     *     "camera":"someCameraId",
+     *     "modelKey":"event"
+     *   }
+     * }
+     */
+    shouldProcessEvent(updatePacket) {
+        if (updatePacket.payload.stats) {
+            // We're not interested in stats
+            return false;
+        } else if (updatePacket.action.action === 'update' && updatePacket.action.modelKey === 'camera') {
+            // Updates lastMotion or the lastRing
+            return true;
+        } else if (updatePacket.action.modelKey === 'event' && updatePacket.payload.type === 'smartDetectZone') {
+            // Smart detections
+            return true;
+        }
+        return false;
+    }
+
     // Configure the realtime update events API listener to trigger events on accessories, like motion.
     configureUpdatesListener() {
         // Only configure the event listener if it exists and it's not already configured.
@@ -158,38 +203,26 @@ class ProtectWebSocket {
                 return;
             }
 
-            // Update actions that we care about (doorbell rings, motion detection) look like this:
-            //
-            // action: "update"
-            // id: "someCameraId"
-            // modelKey: "camera"
-            // newUpdateId: "ignorethis"
-            //
-            // The payloads are what differentiate them - one updates lastMotion and the other lastRing.
-
             // Filter on what actions we're interested in only.
-            if ((updatePacket.action.action !== 'update') || (updatePacket.action.modelKey !== 'camera')) {
+            if (!this.shouldProcessEvent(updatePacket)) {
                 return;
             }
 
             // get payload from updatePacket
             const payload = updatePacket.payload;
 
-            if (payload.stats) {
-                return;
-            }
-
             // get protectcamera driver
             const driver = Homey.ManagerDrivers.getDriver('protectcamera');
 
             // Get device from camera id
-            const device = driver.getDeviceById(updatePacket.action.id);
+            const deviceId = payload.camera || updatePacket.action.id;
+            const device = driver.getDeviceById(deviceId);
             if (!device) {
                 return;
             }
 
             // Parse Websocket payload message
-            driver.onParseWesocketMessage(device, payload);
+            driver.onParseWebsocketMessage(device, payload);
         });
         this._eventListenerConfigured = true;
         return true;
