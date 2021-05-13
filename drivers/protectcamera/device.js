@@ -73,8 +73,8 @@ class Camera extends Homey.Device {
     new Homey.FlowCardAction(UfvConstants.ACTION_TAKE_SNAPSHOT)
         .register()
         .registerRunListener((args, state) => {
-          if (typeof args.device.getData().id !== 'undefined') {
-            this._onSnapshotBuffer(args.device.getData(), args.width)
+          if (typeof args.device.getData === 'function' && typeof args.device.getData().id !== 'undefined') {
+            this._onSnapshotBuffer(args.device.getName(), args.device.getData(), args.width)
                 .catch(this.error.bind(this, 'Could not take snapshot.'));
           }
 
@@ -352,7 +352,7 @@ class Camera extends Homey.Device {
     }
   }
 
-  _onSnapshotBuffer(camera, width) {
+  _onSnapshotBuffer(cameraName, camera, width) {
     return new Promise((resolve, reject) => {
       Homey.app.api.createSnapshotUrl(camera, width)
           .then(snapshotUrl => {
@@ -387,14 +387,14 @@ class Camera extends Homey.Device {
                         Homey.app.snapshotToken.setValue(SnapshotImage);
 
                         Homey.app.debug('------ _onSnapshotBuffer ------');
-                        Homey.app.debug(`- Camera name: ${this.getName()}`);
+                        Homey.app.debug(`- Camera name: ${cameraName}`);
                         Homey.app.debug(`- Snapshot url: ${SnapshotImage.cloudUrl}`);
                         Homey.app.debug(`- Stream url: ${streamUrl}`);
                         Homey.app.debug('-------------------------------');
 
                         this._snapshotTrigger.trigger({
                           ufv_snapshot_token: SnapshotImage,
-                          ufv_snapshot_camera: this.getName(),
+                          ufv_snapshot_camera: cameraName,
                           ufv_snapshot_snapshot_url: SnapshotImage.cloudUrl,
                           ufv_snapshot_stream_url: streamUrl,
                         });
