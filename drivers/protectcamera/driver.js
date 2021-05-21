@@ -29,9 +29,6 @@ class UniFiCameraDriver extends Homey.Driver {
   }
 
   onParseWebsocketMessage(camera, payload) {
-    // Debug information about playload
-    Homey.app.debug(JSON.stringify(payload));
-
     if (Object.prototype.hasOwnProperty.call(camera, '_events')) {
       Homey.app.debug(JSON.stringify(payload));
       if (payload.hasOwnProperty('isRecording')) {
@@ -70,6 +67,14 @@ class UniFiCameraDriver extends Homey.Driver {
         camera.onIsDark(payload.isDark);
       }
     }
+  }
+
+  getUnifiDeviceById(camera) {
+    const device = this.getDevice({
+      id: camera,
+    });
+
+    return device;
   }
 }
 

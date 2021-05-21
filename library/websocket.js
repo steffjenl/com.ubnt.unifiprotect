@@ -216,7 +216,7 @@ class ProtectWebSocket {
 
             // Get device from camera id
             const deviceId = payload.camera || updatePacket.action.id;
-            const device = driver.getDeviceById(deviceId);
+            const device = driver.getUnifiDeviceById(deviceId);
             if (!device) {
                 return;
             }
